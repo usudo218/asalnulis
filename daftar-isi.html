@@ -32,25 +32,20 @@
     <header class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-slate-200/80 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo Official -->
                 <a href="index.html" class="flex items-center space-x-3 group py-1">
-                    <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md group-hover:scale-105 transition duration-300">
-                        AN
-                    </div>
+                    <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md group-hover:scale-105 transition duration-300">AN</div>
                     <div class="border-l border-slate-300 pl-3">
                         <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">ASAL NULIS</span>
                         <span class="text-[10px] font-bold text-blue-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
                     </div>
                 </a>
 
-                <!-- Desktop Navigation -->
                 <nav class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600">
                     <a href="index.html" class="hover:text-black transition">Beranda</a>
                     <a href="daftar-isi.html" class="text-black font-extrabold border-b-2 border-black pb-1">Daftar Isi</a>
                     <a href="about.html" class="hover:text-black transition">Tentang Penulis</a>
                 </nav>
 
-                <!-- CTA Button (Tombol Login Admin) -->
                 <div class="hidden lg:flex items-center space-x-4">
                     <a href="admin.html" class="px-6 py-2.5 bg-black text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2 hover:bg-slate-800 transition">
                         <i class="fa-solid fa-right-to-bracket text-base"></i>
@@ -58,14 +53,10 @@
                     </a>
                 </div>
 
-                <!-- Mobile Menu Button -->
-                <button id="menu-btn" class="lg:hidden text-slate-700 p-2">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
+                <button id="menu-btn" class="lg:hidden text-slate-700 p-2"><i class="fa-solid fa-bars text-2xl"></i></button>
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl">
             <a href="index.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Beranda</a>
             <a href="daftar-isi.html" class="block px-4 py-2 rounded-xl bg-slate-100 font-bold text-slate-900">Daftar Isi</a>
@@ -85,15 +76,10 @@
                 Arsip lengkap tempat menampung racikan sindiran, rasan-rasan fenomena sosial yang absurd, fiksiana tanpa pemanis buatan, dan catatan harian tentang betapa makin anehnya dunia hari ini.
             </p>
 
-            <!-- Counter Stats Badges -->
             <div class="flex flex-wrap justify-center gap-6 mt-6 pt-5 border-t border-white/10 text-xs font-medium text-slate-300">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span id="totalCount" class="font-bold text-white">29</span> Total Tulisan
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                    <span class="font-bold text-white">3</span> Topik Utama
+                    <span id="totalCount" class="font-bold text-white">0</span> Total Tulisan
                 </div>
             </div>
         </div>
@@ -101,20 +87,14 @@
 
     <!-- Main Content Container -->
     <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-8">
-        
-        <!-- Controls: Search & Category Filter -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm mb-6 space-y-4">
-            <!-- Search Bar -->
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" id="searchInput" onkeyup="filterArticles()" placeholder="Cari berdasarkan judul atau kata kunci..." 
                        class="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                <button onclick="clearSearch()" id="clearBtn" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-black text-xs font-bold">
-                    ✕
-                </button>
+                <button onclick="clearSearch()" id="clearBtn" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-black text-xs font-bold">✕</button>
             </div>
 
-            <!-- Category Filter Pills -->
             <div class="flex items-center justify-between flex-wrap gap-2 pt-1 border-t border-slate-100">
                 <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Filter Topik:</span>
                 <div class="flex flex-wrap gap-1.5" id="categoryFilters">
@@ -126,11 +106,7 @@
             </div>
         </div>
 
-        <!-- List Tulisan Ringkas & Padat -->
-        <div class="space-y-2.5" id="articleList">
-            <!-- Item tulisan otomatis di-generate via JS -->
-        </div>
-
+        <div class="space-y-2.5" id="articleList"></div>
     </main>
 
     <!-- Footer -->
@@ -142,46 +118,26 @@
         </div>
     </footer>
 
-    <!-- Script Logic -->
     <script>
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
 
-        // DATA TULISAN LENGKAP DENGAN NARASI RINGKAS SARKAS
-        const allArticles = [
-            { title: "Symphony di Ruang Pengap : Menarikan Dansa Kematian Logika", category: "ASAL NULIS", readTime: "4 mnt", excerpt: "Ketika ruang ber-AC dan rapat panjang berhasil membunuh akal sehat tanpa pertumpahan darah." },
-            { title: "MBG: Berkah Nutrisi atau Malapetaka Seragam?", category: "RASAN-RASAN", readTime: "3 mnt", excerpt: "Niatnya bagi nutrisi gratis, wujudnya malah menambah antrean drama dan seragam bau kuah." },
-            { title: "Pendidikan 4.0: 4 Persen Belajar, Sisanya Scrolling Sampai Jari Keriting", category: "RASAN-RASAN", readTime: "5 mnt", excerpt: "Transformasi digital kelas yang sukses mengubah jam pelajaran jadi sesi maraton FYP." },
-            { title: "MANIFESTO MEJA KAYU: Antara Mesias Digital dan Budak Land of Dawn", category: "ASAL NULIS", readTime: "4 mnt", excerpt: "Refleksi dari atas meja tua menyaksikan masa depan bangsa yang tersandera ranked match." },
-            { title: "SKP, TPP, dan Seni Bertahan Hidup di Balik Layar Monitor", category: "RASAN-RASAN", readTime: "5 mnt", excerpt: "Seni mengolah angka dan dokumen administratif agar dapur tetap ngebul tanpa kena teguran." },
-            { title: "Guru: Antara Konten yang Ter-Skip dan Filosofi Sungai yang Bodo Amat", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Diabaikan algoritma dan murid, tapi tetap mengalir seperti air sungai yang tak butuh tepuk tangan." },
-            { title: "Menua Itu Pasti, Mencintaimu Itu Takdir yang Kusyukuri", category: "FIKSIANA", readTime: "3 mnt", excerpt: "Sepotong романтика di tengah gempuran tagihan bulanan dan uban yang mulai bermunculan." },
-            { title: "Konflik Kernel Gen Alpha: Ketika Coding Tulis Tangan Menjadi Siksaan \"Syntax Error\"", category: "ASAL NULIS", readTime: "5 mnt", excerpt: "Kisah generasi layar sentuh yang mendadak lumpuh saat disuruh memegang pulpen di atas kertas." },
-            { title: "Pegawai Pemerintah \"Setengah Matang\" dan Filosofi Karet Kolor", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Fleksibel saat ada kepentingan, melar saat jam kerja, dan makin kendor di akhir bulan." },
-            { title: "Duel Maut di Kelas Informatika: Jempol Formula 1, Literasi Siput Stroke", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Kecepatan mengetik pesan menyamai kecepatan cahaya, tapi membaca satu paragraf langsung pusing." },
-            { title: "Jangan Percaya Speedtest Sekolah! Rahasia Gelap di Balik Lambatnya Koneksi Ruang Guru.", category: "ASAL NULIS", readTime: "3 mnt", excerpt: "Indikator sinyal menunjukkan penuh, namun untuk membuka satu dokumen butuh mukjizat." },
-            { title: "Paradoks Cuan: Gak Kerja Gak Punya Duit, Giliran Kerja Malah Punya Utang", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Perhitungan matematika ekonomi modern yang ajaib dan bikin pusing tujuh keliling." },
-            { title: "Diplomasi Es Teh: Ketika Gelas Plastik Lebih Galau dari Nasib Jomblo", category: "FIKSIANA", readTime: "3 mnt", excerpt: "Percakapan pinggir jalan yang membicarakan masa depan berbekal cairan manis bersedotan." },
-            { title: "Duel Maut Tiang: Kisah Cinta Segitiga Antara Listrik, Lampu, dan Internet", category: "FIKSIANA", readTime: "4 mnt", excerpt: "Kabel yang saling tumpang tindih bak benang ruwet harapan rakyat di ujung gang." },
-            { title: "Menulis Setiap Hari: Antara Disiplin dan Gejala Gangguan Jiwa Ringan", category: "ASAL NULIS", readTime: "5 mnt", excerpt: "Sempitnya garis batas antara konsistensi berkarya dan kebutuhan meluapkan rasa frustrasi." },
-            { title: "Berhenti Bilang Menulis Itu Seni, Bisa Jadi Itu Cuma Cara Kamu 'Sembunyi'", category: "ASAL NULIS", readTime: "3 mnt", excerpt: "Sembunyi dari kenyataan pahit sambil berpura-pura sedang menciptakan karya puitis." },
-            { title: "WFH: Work From Home atau \"Waduh, Fulus Habis\"?", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Bekerja fleksibel dari rumah yang ternyata malah melipatgandakan pengeluaran tak terduga." },
-            { title: "Dilema \"Suguh\" dan Perang Dingin di Meja Makan Mudik", category: "FIKSIANA", readTime: "4 mnt", excerpt: "Ajang pamer terselubung berkedok silaturahmi tahunan keluarga besar." },
-            { title: "Menolak Pensiun", category: "ASAL NULIS", readTime: "3 mnt", excerpt: "Tubuh menua, tapi tanggungan dan keinginan untuk tetap dianggap ada menolak padam." },
-            { title: "Diplomasi Usia dan Konspirasi Takdir", category: "ASAL NULIS", readTime: "4 mnt", excerpt: "Ketika angka di KTP dijadikan alasan utama untuk membatasi ruang gerak seseorang." },
-            { title: "Antara Kitab Suci Kurikulum dan Panel Berwarna: Sebuah Dilema \"User\" Otak", category: "RASAN-RASAN", readTime: "5 mnt", excerpt: "Petunjuk yang berubah-ubah setiap ganti pimpinan, membingungkan mereka yang di lapangan." },
-            { title: "Logika Semen vs Logika Sertifikasi: Catatan Asal Nulis", category: "ASAL NULIS", readTime: "4 mnt", excerpt: "Antara bukti otentik di lapangan dan lembaran kertas berstempel yang diagungkan." },
-            { title: "Sahur di Rest Area: Niatnya Hemat, Malahnya Kena \"Prank\" Harga Sultan", category: "RASAN-RASAN", readTime: "3 mnt", excerpt: "Maksud hati mengisi perut di perjalanan, apa daya dompet diperas tanpa ampun." },
-            { title: "Motuba: Menolak Pensiun, Melawan Takdir", category: "FIKSIANA", readTime: "4 mnt", excerpt: "Mobil tua bangkai yang tetap dipaksa menerjang jalanan demi gengsi dan kenangan." },
-            { title: "GURU VS SKIBIDI: Menangis di Pojok Kelas Hadapi Gen Alpha", category: "RASAN-RASAN", readTime: "4 mnt", excerpt: "Hilangnya bahasa peradaban digantikan slang internet yang bikin pendidik garuk-garuk kepala." },
-            { title: "Seni \"Tidur Elegan\" dan Ironi Makan Bergizi Gratis", category: "RASAN-RASAN", readTime: "3 mnt", excerpt: "Mengisi waktu luang dengan memejamkan mata daripada menyaksikan realita yang membingungkan." },
-            { title: "Romantisme dan Paradoks di Balik Literan BBM", category: "ASAL NULIS", readTime: "4 mnt", excerpt: "Naik turun harga bensin yang lebih intens daripada drama percintaan anak muda." },
-            { title: "Gupuh", category: "FIKSIANA", readTime: "2 mnt", excerpt: "Kepanikan massal menyikapi hal sepele yang dibesar-besarkan oleh prasangka." },
-            { title: "MBG", category: "RASAN-RASAN", readTime: "3 mnt", excerpt: "Tiga huruf singkat yang menampung segudang janji dan perdebatan hangat warga." }
-        ];
-
+        let allArticles = [];
         let selectedCat = 'SEMUA';
+
+        async function initData() {
+            try {
+                const res = await fetch('asalnulis_articles.json');
+                if (res.ok) allArticles = await res.json();
+            } catch(e) {}
+
+            if (!allArticles || allArticles.length === 0) {
+                allArticles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
+            }
+
+            renderList(allArticles);
+        }
 
         function renderList(items) {
             const listEl = document.getElementById('articleList');
@@ -194,7 +150,6 @@
                     <div class="bg-white p-8 text-center rounded-2xl border border-slate-200">
                         <i class="fa-solid fa-folder-open text-3xl text-slate-300 mb-2"></i>
                         <p class="text-slate-600 font-bold text-sm">Tidak ada tulisan yang cocok.</p>
-                        <p class="text-slate-400 text-xs mt-0.5">Coba gunakan kata kunci lain atau pilih kategori berbeda.</p>
                     </div>`;
                 return;
             }
@@ -205,7 +160,7 @@
                 if (art.category === "FIKSIANA") catBg = "bg-indigo-600 text-white";
 
                 listEl.innerHTML += `
-                    <article class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/80 hover:border-black/30 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col md:flex-row md:items-center justify-between gap-2.5 cursor-pointer">
+                    <article class="bg-white px-5 py-3.5 rounded-xl border border-slate-200/80 hover:border-black/30 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col md:flex-row md:items-center justify-between gap-2.5">
                         <div class="flex items-start gap-3.5">
                             <span class="text-xs font-black text-slate-300 group-hover:text-black transition pt-1 w-5">
                                 ${String(index + 1).padStart(2, '0')}
@@ -213,19 +168,14 @@
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ${catBg}">${art.category}</span>
-                                    <span class="text-[10px] text-slate-400 font-medium"><i class="fa-regular fa-clock mr-1"></i>${art.readTime}</span>
+                                    <span class="text-[10px] text-slate-400 font-medium"><i class="fa-regular fa-calendar-days mr-1"></i>${art.date || '-'}</span>
+                                    <span class="text-[10px] text-slate-400 font-medium"><i class="fa-regular fa-clock mr-1"></i>${art.readTime || '3 mnt'}</span>
                                 </div>
                                 <h3 class="text-xs md:text-sm font-bold text-slate-800 group-hover:text-black transition leading-snug">
                                     ${art.title}
                                 </h3>
-                                <p class="text-[11px] text-slate-500 leading-relaxed line-clamp-1">
-                                    ${art.excerpt}
-                                </p>
+                                <p class="text-[11px] text-slate-500 leading-relaxed line-clamp-1">${art.excerpt}</p>
                             </div>
-                        </div>
-                        <div class="flex items-center justify-end gap-1.5 text-[11px] font-bold text-slate-400 group-hover:text-black transition shrink-0 pt-1 md:pt-0 border-t md:border-t-0 border-slate-100">
-                            <span>Baca</span>
-                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
                         </div>
                     </article>`;
             });
@@ -233,9 +183,7 @@
 
         function filterArticles() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const clearBtn = document.getElementById('clearBtn');
-            
-            clearBtn.classList.toggle('hidden', query === '');
+            document.getElementById('clearBtn').classList.toggle('hidden', query === '');
 
             const filtered = allArticles.filter(item => {
                 const matchesCat = selectedCat === 'SEMUA' || item.category === selectedCat;
@@ -249,11 +197,9 @@
         function setCategory(cat) {
             selectedCat = cat;
             document.querySelectorAll('.cat-pill').forEach(btn => {
-                if (btn.innerText.trim() === cat) {
-                    btn.className = 'cat-pill active bg-black text-white px-3.5 py-1 rounded-full text-xs font-bold transition shadow-sm';
-                } else {
-                    btn.className = 'cat-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-3.5 py-1 rounded-full text-xs font-bold transition';
-                }
+                btn.className = (btn.innerText.trim() === cat) 
+                    ? 'cat-pill active bg-black text-white px-3.5 py-1 rounded-full text-xs font-bold transition shadow-sm'
+                    : 'cat-pill bg-slate-100 text-slate-600 hover:bg-slate-200 px-3.5 py-1 rounded-full text-xs font-bold transition';
             });
             filterArticles();
         }
@@ -263,7 +209,7 @@
             filterArticles();
         }
 
-        renderList(allArticles);
+        initData();
     </script>
 </body>
 </html>
