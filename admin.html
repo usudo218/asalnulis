@@ -1,429 +1,220 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin Otomatis - Asal Nulis</title>
-    
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/usudo218/blog/main/pp.png">
-
-    <!-- Tailwind CSS CDN -->
+    <title>Admin Panel - Asal Nulis</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'Poppins', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <style>
-        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="font-sans text-slate-800 bg-slate-100 antialiased selection:bg-black selection:text-white flex flex-col min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8 min-h-screen flex items-center justify-center">
 
-    <!-- LOGIN FORM -->
-    <div id="loginSection" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white max-w-md w-full rounded-3xl p-8 shadow-2xl border border-slate-200 text-center space-y-6">
-            <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto shadow-lg">AN</div>
-            <div>
-                <h1 class="text-xl font-black text-slate-900 uppercase">Akses Editor Admin</h1>
-                <p class="text-xs text-slate-400 font-semibold mt-1">Masukkan kata sandi terproteksi.</p>
+    <!-- ================= LAYAR LOGIN ADMIN ================= -->
+    <div id="login-screen" class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-3 shadow-md">
+                AN
             </div>
-
-            <form onsubmit="verifyPassword(event)" class="space-y-4 text-left">
-                <div>
-                    <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Kata Sandi (Password)</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="password" id="passwordInput" required placeholder="••••••••" 
-                               class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                    </div>
-                </div>
-                <div id="loginError" class="text-xs font-bold text-rose-600 hidden text-center">
-                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Kata sandi salah!
-                </div>
-                <button type="submit" class="w-full py-3.5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md">
-                    Masuk ke Panel Editor
-                </button>
-            </form>
-            
-            <div class="pt-2 border-t border-slate-100">
-                <a href="index.html" class="text-xs font-bold text-slate-400 hover:text-black transition">← Kembali ke Beranda</a>
-            </div>
+            <h1 class="text-xl font-bold text-slate-900">Akses Pengelola Admin</h1>
+            <p class="text-xs text-slate-500 mt-1">asalnulis.web.id</p>
         </div>
+
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password Admin</label>
+                <input type="password" id="admin-pass" required placeholder="Masukkan password admin" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black focus:outline-none">
+            </div>
+            <div id="login-error" class="hidden text-xs text-rose-600 font-bold text-center">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Password yang Anda masukkan salah!
+            </div>
+            <button type="submit" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition">
+                Masuk ke Dashboard
+            </button>
+        </form>
     </div>
 
-    <!-- MAIN PANEL ADMIN -->
-    <div id="adminPanel" class="hidden flex-col min-h-screen">
-        <header class="fixed top-0 left-0 right-0 z-40 glass-header border-b border-slate-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-20">
-                    <a href="index.html" class="flex items-center space-x-3 group">
-                        <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md">AN</div>
-                        <div class="border-l border-slate-300 pl-3">
-                            <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">PANEL EDITOR OTOMATIS</span>
-                            <span class="text-[10px] font-bold text-rose-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
-                        </div>
-                    </a>
+    <!-- ================= DASHBOARD ADMIN (TERSEMBUNYI) ================= -->
+    <div id="admin-dashboard" class="hidden w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b pb-4 mb-6">
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">Admin Panel Editor</h1>
+                <p class="text-xs text-slate-500">asalnulis.web.id</p>
+            </div>
+            <button onclick="logoutAdmin()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
 
-                    <nav class="flex items-center space-x-3 text-xs font-bold">
-                        <a href="index.html" target="_blank" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition">
-                            <i class="fa-solid fa-globe mr-1"></i> Lihat Blog
-                        </a>
-                        <button onclick="logout()" class="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition">
-                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
-                        </button>
-                    </nav>
+        <!-- Form Token GitHub -->
+        <div class="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Personal Access Token</label>
+            <div class="flex gap-2">
+                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
+                <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan</button>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di browser Anda.</p>
+        </div>
+
+        <!-- Form Tambah Artikel -->
+        <form id="article-form" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Judul Tulisan / Naskah</label>
+                <input type="text" id="title" required placeholder="Masukkan judul tulisan..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Topik</label>
+                    <select id="category" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                        <option value="ASAL NULIS">ASAL NULIS</option>
+                        <option value="RASAN-RASAN">RASAN-RASAN</option>
+                        <option value="FIKSIANA">FIKSIANA</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Estimasi Waktu Baca</label>
+                    <input type="text" id="readTime" value="3 mnt" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm">
                 </div>
             </div>
-        </header>
 
-        <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-28 pb-16">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                <!-- FORM EDITOR -->
-                <section class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                        <h1 class="text-lg font-black uppercase tracking-tight text-slate-900" id="formTitle">
-                            <i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru
-                        </h1>
-                        <button type="button" onclick="resetForm()" class="text-xs text-slate-400 hover:text-rose-600 font-bold hidden" id="cancelEditBtn">✕ Batal Edit</button>
-                    </div>
-
-                    <!-- PENGATURAN GITHUB TOKEN (CUKUP ISI 1x) -->
-                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-800"><i class="fa-brands fa-github mr-1"></i> Konfigurasi Auto Sync GitHub</span>
-                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-md" id="syncStatus">Tersimpan</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                            <div>
-                                <label class="block font-bold text-slate-500 mb-1">Repo Path (Username/Repo)</label>
-                                <input type="text" id="ghRepo" placeholder="usudo218/blog" value="usudo218/blog"
-                                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block font-bold text-slate-500 mb-1">Personal Token GitHub</label>
-                                <input type="password" id="ghToken" placeholder="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" 
-                                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold focus:outline-none" onchange="saveConfig()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <form id="articleForm" onsubmit="saveArticle(event)" class="space-y-5">
-                        <input type="hidden" id="editIndex" value="-1">
-
-                        <!-- Judul & Tanggal -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Judul Tulisan / Naskah</label>
-                                <input type="text" id="articleTitle" required placeholder="Judul tulisan..." 
-                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Tanggal Rilis</label>
-                                <input type="date" id="articleDate" required 
-                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                            </div>
-                        </div>
-
-                        <!-- Topik & Waktu Baca -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Topik Utama</label>
-                                <select id="articleCategory" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                                    <option value="ASAL NULIS">ASAL NULIS</option>
-                                    <option value="RASAN-RASAN">RASAN-RASAN</option>
-                                    <option value="FIKSIANA">FIKSIANA</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Estimasi Waktu Baca</label>
-                                <input type="text" id="articleReadTime" placeholder="3 mnt" value="3 mnt" 
-                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                            </div>
-                        </div>
-
-                        <!-- Path Gambar Sampul -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Gambar Sampul (Path: images/nama.webp)</label>
-                            <input type="text" id="imageData" placeholder="images/tulisan-1.webp" 
-                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                        </div>
-
-                        <!-- Path Backsound Audio -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Backsound Audio (Path: audio/nama.mp3)</label>
-                            <input type="text" id="audioData" placeholder="audio/backsound-1.mp3" 
-                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
-                        </div>
-
-                        <!-- Ringkasan & Isi -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Ringkasan / Sub-judul Sarkas</label>
-                            <textarea id="articleExcerpt" rows="2" required placeholder="Tuliskan 1 kalimat ringkasan..." 
-                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Isi Lengkap Naskah</label>
-                            <textarea id="articleContent" rows="8" required placeholder="Tuliskan isi naskah..." 
-                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition"></textarea>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full py-4 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
-                            <span>Simpan & Langsung Auto-Publish ke GitHub</span>
-                        </button>
-                    </form>
-                </section>
-
-                <!-- DAFTAR TULISAN TERSIMPAN -->
-                <section class="lg:col-span-5 space-y-4">
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900">
-                                Kelola Tulisan (<span id="savedCount">0</span>)
-                            </h2>
-                            <button onclick="syncFromGitHub()" class="text-[10px] font-bold text-blue-600 hover:underline">
-                                <i class="fa-solid fa-rotate mr-1"></i> Tarik Data GitHub
-                            </button>
-                        </div>
-                        <div class="space-y-3 max-h-[650px] overflow-y-auto pr-1" id="adminArticleList"></div>
-                    </div>
-                </section>
-
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Path Gambar Sampul</label>
+                    <input type="text" id="image-name" placeholder="images/tulisan-1.webp" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Path Audio Backsound</label>
+                    <input type="text" id="audio-name" placeholder="audio/backsound-1.mp3" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-mono">
+                </div>
             </div>
-        </main>
 
-        <footer class="bg-black text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
-            asalnulis.web.id — Panel Pengelolaan Konten Terproteksi Auto-Sync
-        </footer>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan / Sub-judul Sarkas (Excerpt)</label>
+                <textarea id="excerpt" rows="2" required placeholder="Tuliskan 1-2 kalimat ringkasan singkat..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Isi Naskah Lengkap</label>
+                <textarea id="content" rows="6" required placeholder="Tuliskan isi naskah tulisan secara lengkap..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full py-3.5 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg transition">
+                <i class="fa-solid fa-paper-plane mr-1"></i> Terbitkan Artikel Instan Ke GitHub
+            </button>
+        </form>
+
+        <!-- Status Result -->
+        <div id="status" class="hidden mt-4 p-4 rounded-xl text-xs text-center font-bold"></div>
     </div>
 
     <script>
-        const HASH_2 = "1856716a";
-        function getHash(s) {
-            let h = 0;
-            for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-            return h.toString(16);
+        // PASSCODE ADMIN SAMA SEPERTI STSMAN1MUNCAR
+        const ADMIN_PASSCODE = "admin123";
+
+        const loginScreen = document.getElementById('login-screen');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const loginError = document.getElementById('login-error');
+
+        if (sessionStorage.getItem('an_admin_logged') === 'true') {
+            showDashboard();
         }
 
-        function verifyPassword(e) {
+        document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const val = document.getElementById('passwordInput').value.trim();
-            if (getHash(val) === HASH_2 || val === 'admin123') {
-                sessionStorage.setItem('asalnulis_logged_in', 'true');
-                checkAuth();
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === ADMIN_PASSCODE) {
+                sessionStorage.setItem('an_admin_logged', 'true');
+                showDashboard();
             } else {
-                document.getElementById('loginError').classList.remove('hidden');
+                loginError.classList.remove('hidden');
             }
+        });
+
+        function showDashboard() {
+            loginScreen.classList.add('hidden');
+            adminDashboard.classList.remove('hidden');
+            document.getElementById('gh-token').value = localStorage.getItem('an_gh_token') || '';
         }
 
-        function checkAuth() {
-            if (sessionStorage.getItem('asalnulis_logged_in') === 'true') {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                document.getElementById('adminPanel').classList.add('flex');
-                
-                if(!document.getElementById('articleDate').value) {
-                    document.getElementById('articleDate').valueAsDate = new Date();
-                }
-
-                // Load Config Token
-                document.getElementById('ghToken').value = localStorage.getItem('asalnulis_token') || '';
-                document.getElementById('ghRepo').value = localStorage.getItem('asalnulis_repo') || 'usudo218/blog';
-                
-                syncFromGitHub();
-            }
+        function logoutAdmin() {
+            sessionStorage.removeItem('an_admin_logged');
+            location.reload();
         }
 
-        function saveConfig() {
-            localStorage.setItem('asalnulis_token', document.getElementById('ghToken').value.trim());
-            localStorage.setItem('asalnulis_repo', document.getElementById('ghRepo').value.trim());
+        function saveToken() {
+            const token = document.getElementById('gh-token').value.trim();
+            localStorage.setItem('an_gh_token', token);
+            alert('Token berhasil disimpan!');
         }
 
-        function logout() {
-            sessionStorage.removeItem('asalnulis_logged_in');
-            window.location.reload();
-        }
-
-        let articles = [];
-
-        // SYNC LANGSUNG DARI GITHUB
-        async function syncFromGitHub() {
-            const repo = document.getElementById('ghRepo').value.trim();
-            try {
-                const res = await fetch(`https://raw.githubusercontent.com/${repo}/main/asalnulis_articles.json?v=` + new Date().getTime());
-                if(res.ok) {
-                    articles = await res.json();
-                    localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
-                    renderAdminList();
-                }
-            } catch(e) {
-                articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
-                renderAdminList();
-            }
-        }
-
-        function renderAdminList() {
-            const listEl = document.getElementById('adminArticleList');
-            const countEl = document.getElementById('savedCount');
-            listEl.innerHTML = '';
-            countEl.innerText = articles.length;
-
-            if (articles.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">Belum ada artikel.</div>`;
-                return;
-            }
-
-            articles.forEach((art, index) => {
-                listEl.innerHTML += `
-                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-black px-2 py-0.5 rounded bg-black text-white uppercase">${art.category}</span>
-                            <span class="text-[10px] text-slate-400">${art.date || '-'} | ${art.readTime || '3 mnt'}</span>
-                        </div>
-                        <h3 class="text-xs font-bold text-slate-900 leading-snug">${art.title}</h3>
-                        <p class="text-[11px] text-slate-500 line-clamp-2">${art.excerpt}</p>
-                        
-                        <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs font-bold">
-                            <div class="flex items-center gap-2 text-slate-400 text-[10px]">
-                                ${art.image ? '<i class="fa-solid fa-image text-emerald-600"></i>' : ''}
-                                ${art.audio ? '<i class="fa-solid fa-music text-indigo-600"></i>' : ''}
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="editArticle(${index})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button onclick="deleteArticle(${index})" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i> Hapus</button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        // SIMPAN & DONGKRAK KE GITHUB SECARA OTOMATIS
-        async function saveArticle(e) {
+        // METODE SIMPAN INSTAN DENGAN FILE BARU DI FOLDER content/ (ADOP STSMAN1MUNCAR)
+        document.getElementById('article-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            saveConfig();
-
-            const token = document.getElementById('ghToken').value.trim();
-            const repo = document.getElementById('ghRepo').value.trim();
+            const token = localStorage.getItem('an_gh_token');
+            const statusDiv = document.getElementById('status');
+            const submitBtn = document.getElementById('submit-btn');
 
             if (!token) {
-                alert('Harap masukkan GitHub Personal Token Anda terlebih dahulu agar bisa Auto-Sync!');
+                alert('Silakan masukkan dan simpan GitHub Token Anda terlebih dahulu!');
                 return;
             }
 
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan ke GitHub...`;
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Mengirim ke GitHub...';
+            statusDiv.classList.add('hidden');
 
-            const editIndex = parseInt(document.getElementById('editIndex').value);
-            const articleObj = {
-                title: document.getElementById('articleTitle').value,
-                date: document.getElementById('articleDate').value,
-                category: document.getElementById('articleCategory').value,
-                readTime: document.getElementById('articleReadTime').value,
-                image: document.getElementById('imageData').value,
-                audio: document.getElementById('audioData').value,
-                excerpt: document.getElementById('articleExcerpt').value,
-                content: document.getElementById('articleContent').value
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const readTime = document.getElementById('readTime').value;
+            const image = document.getElementById('image-name').value;
+            const audio = document.getElementById('audio-name').value;
+            const excerpt = document.getElementById('excerpt').value;
+            const content = document.getElementById('content').value;
+
+            // MEMBUAT FILE UNIQUE TIMESTAMP TERPISAH
+            const fileName = `article-${Date.now()}.json`;
+            const fileData = {
+                title, category, readTime, image, audio,
+                excerpt, content,
+                date: new Date().toISOString()
             };
 
-            if (editIndex === -1) {
-                articles.unshift(articleObj);
-            } else {
-                articles[editIndex] = articleObj;
-            }
+            const repo = 'usudo218/blog'; // SESUAIKAN DENGAN REPO
+            const path = `content/${fileName}`;
+            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
 
-            // AUTO PUSH TO GITHUB API
             try {
-                // 1. Ambil SHA file lama dari GitHub
-                const getFile = await fetch(`https://api.github.com/repos/${repo}/contents/asalnulis_articles.json`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                
-                let sha = "";
-                if (getFile.ok) {
-                    const fileData = await getFile.json();
-                    sha = fileData.sha;
-                }
-
-                // 2. Upload/Commit file JSON baru
-                const contentUnicode = new TextEncoder().encode(JSON.stringify(articles, null, 2));
-                const base64Content = btoa(String.fromCharCode(...contentUnicode));
-
-                const updateFile = await fetch(`https://api.github.com/repos/${repo}/contents/asalnulis_articles.json`, {
+                const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `token ${token}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `Update tulisan: ${articleObj.title}`,
-                        content: base64Content,
-                        sha: sha ? sha : undefined
+                        message: `Tambah artikel: ${title}`,
+                        content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
+                        branch: 'main'
                     })
                 });
 
-                if (updateFile.ok) {
-                    localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
-                    resetForm();
-                    renderAdminList();
-                    alert('BERHASIL! Artikel telah dipublikasikan dan tersimpan otomatis di GitHub.');
+                if (response.ok) {
+                    statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
+                    statusDiv.innerText = 'BERHASIL! Artikel baru telah diterbitkan ke GitHub.';
+                    document.getElementById('article-form').reset();
                 } else {
-                    const errErr = await updateFile.json();
-                    alert('Gagal push ke GitHub: ' + errErr.message);
+                    const err = await response.json();
+                    throw new Error(err.message || 'Gagal menyimpan');
                 }
-            } catch(err) {
-                alert('Terjadi kesalahan jaringan saat Auto-Sync!');
-                console.error(err);
+            } catch (err) {
+                statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
+                statusDiv.innerText = 'GAGAL: ' + err.message + ' (Pastikan token benar dan memiliki akses repo)';
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-sm"></i> Simpan & Langsung Auto-Publish ke GitHub`;
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Terbitkan Artikel Instan Ke GitHub';
             }
-        }
-
-        function editArticle(index) {
-            const art = articles[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('articleTitle').value = art.title;
-            document.getElementById('articleDate').value = art.date || '';
-            document.getElementById('articleCategory').value = art.category;
-            document.getElementById('articleReadTime').value = art.readTime || '3 mnt';
-            document.getElementById('imageData').value = art.image || '';
-            document.getElementById('audioData').value = art.audio || '';
-            document.getElementById('articleExcerpt').value = art.excerpt;
-            document.getElementById('articleContent').value = art.content;
-
-            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-600 mr-2"></i> Edit Tulisan';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function deleteArticle(index) {
-            if (confirm('Yakin ingin menghapus tulisan ini?')) {
-                articles.splice(index, 1);
-                saveArticle(new Event('submit'));
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('articleForm').reset();
-            document.getElementById('editIndex').value = '-1';
-            document.getElementById('articleDate').valueAsDate = new Date();
-            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru';
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-        }
-
-        checkAuth();
+        });
     </script>
 </body>
 </html>
