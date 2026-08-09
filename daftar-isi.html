@@ -128,9 +128,12 @@
 
         async function initData() {
             try {
-                const res = await fetch('asalnulis_articles.json');
+                // Menggunakan path relatif ./ dan parameter anti-cache
+                const res = await fetch('./asalnulis_articles.json?v=' + new Date().getTime());
                 if (res.ok) allArticles = await res.json();
-            } catch(e) {}
+            } catch(e) {
+                console.log("Fetch Error:", e);
+            }
 
             if (!allArticles || allArticles.length === 0) {
                 allArticles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
