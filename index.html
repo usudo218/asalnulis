@@ -114,9 +114,12 @@
         async function loadArticles() {
             let articles = [];
             try {
-                const res = await fetch('asalnulis_articles.json');
+                // Menggunakan path relatif ./ dan parameter anti-cache
+                const res = await fetch('./asalnulis_articles.json?v=' + new Date().getTime());
                 if (res.ok) articles = await res.json();
-            } catch(e) {}
+            } catch(e) {
+                console.log("Fetch Error:", e);
+            }
 
             if (!articles || articles.length === 0) {
                 articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
