@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin & Editor - Asal Nulis</title>
+    <title>Panel Admin Otomatis - Asal Nulis</title>
     
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/usudo218/blog/main/pp.png">
@@ -34,7 +34,7 @@
             <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto shadow-lg">AN</div>
             <div>
                 <h1 class="text-xl font-black text-slate-900 uppercase">Akses Editor Admin</h1>
-                <p class="text-xs text-slate-400 font-semibold mt-1">Masukkan kata sandi terproteksi untuk mengelola naskah.</p>
+                <p class="text-xs text-slate-400 font-semibold mt-1">Masukkan kata sandi terproteksi.</p>
             </div>
 
             <form onsubmit="verifyPassword(event)" class="space-y-4 text-left">
@@ -68,7 +68,7 @@
                     <a href="index.html" class="flex items-center space-x-3 group">
                         <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md">AN</div>
                         <div class="border-l border-slate-300 pl-3">
-                            <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">PANEL EDITOR</span>
+                            <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">PANEL EDITOR OTOMATIS</span>
                             <span class="text-[10px] font-bold text-rose-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
                         </div>
                     </a>
@@ -95,6 +95,26 @@
                             <i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru
                         </h1>
                         <button type="button" onclick="resetForm()" class="text-xs text-slate-400 hover:text-rose-600 font-bold hidden" id="cancelEditBtn">✕ Batal Edit</button>
+                    </div>
+
+                    <!-- PENGATURAN GITHUB TOKEN (CUKUP ISI 1x) -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black uppercase text-slate-800"><i class="fa-brands fa-github mr-1"></i> Konfigurasi Auto Sync GitHub</span>
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-md" id="syncStatus">Tersimpan</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="block font-bold text-slate-500 mb-1">Repo Path (Username/Repo)</label>
+                                <input type="text" id="ghRepo" placeholder="usudo218/blog" value="usudo218/blog"
+                                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-500 mb-1">Personal Token GitHub</label>
+                                <input type="password" id="ghToken" placeholder="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" 
+                                       class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl font-semibold focus:outline-none" onchange="saveConfig()">
+                            </div>
+                        </div>
                     </div>
 
                     <form id="articleForm" onsubmit="saveArticle(event)" class="space-y-5">
@@ -133,22 +153,16 @@
 
                         <!-- Path Gambar Sampul -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Gambar Sampul (Path Folder misal: images/tulisan-1.webp)</label>
-                            <input type="text" id="imageData" placeholder="images/nama-gambar.webp" 
-                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition mb-2">
-                            <span class="text-[10px] text-slate-400 font-bold block mb-1">ATAU UPLOAD FILE LOKAL:</span>
-                            <input type="file" accept="image/webp, image/jpeg, image/png" onchange="previewImage(event)" 
-                                   class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:bg-slate-800 transition">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Gambar Sampul (Path: images/nama.webp)</label>
+                            <input type="text" id="imageData" placeholder="images/tulisan-1.webp" 
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
                         </div>
 
                         <!-- Path Backsound Audio -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Backsound Audio (Path Folder misal: audio/backsound-1.mp3)</label>
-                            <input type="text" id="audioData" placeholder="audio/nama-audio.mp3" 
-                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition mb-2">
-                            <span class="text-[10px] text-slate-400 font-bold block mb-1">ATAU UPLOAD FILE LOKAL:</span>
-                            <input type="file" accept="audio/mp3, audio/wav, audio/ogg" onchange="handleAudioUpload(event)" 
-                                   class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-800 hover:file:bg-slate-300 transition">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Backsound Audio (Path: audio/nama.mp3)</label>
+                            <input type="text" id="audioData" placeholder="audio/backsound-1.mp3" 
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
                         </div>
 
                         <!-- Ringkasan & Isi -->
@@ -164,8 +178,9 @@
                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition"></textarea>
                         </div>
 
-                        <button type="submit" class="w-full py-3.5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan & Publikasikan
+                        <button type="submit" id="submitBtn" class="w-full py-4 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+                            <span>Simpan & Langsung Auto-Publish ke GitHub</span>
                         </button>
                     </form>
                 </section>
@@ -177,8 +192,8 @@
                             <h2 class="text-xs font-black uppercase tracking-wider text-slate-900">
                                 Kelola Tulisan (<span id="savedCount">0</span>)
                             </h2>
-                            <button onclick="exportData()" class="text-[10px] font-bold text-blue-600 hover:underline">
-                                <i class="fa-solid fa-download mr-1"></i> Export JSON
+                            <button onclick="syncFromGitHub()" class="text-[10px] font-bold text-blue-600 hover:underline">
+                                <i class="fa-solid fa-rotate mr-1"></i> Tarik Data GitHub
                             </button>
                         </div>
                         <div class="space-y-3 max-h-[650px] overflow-y-auto pr-1" id="adminArticleList"></div>
@@ -189,7 +204,7 @@
         </main>
 
         <footer class="bg-black text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
-            asalnulis.web.id — Panel Pengelolaan Konten Terproteksi
+            asalnulis.web.id — Panel Pengelolaan Konten Terproteksi Auto-Sync
         </footer>
     </div>
 
@@ -218,12 +233,21 @@
                 document.getElementById('adminPanel').classList.remove('hidden');
                 document.getElementById('adminPanel').classList.add('flex');
                 
-                // Set default tanggal hari ini
                 if(!document.getElementById('articleDate').value) {
                     document.getElementById('articleDate').valueAsDate = new Date();
                 }
-                renderAdminList();
+
+                // Load Config Token
+                document.getElementById('ghToken').value = localStorage.getItem('asalnulis_token') || '';
+                document.getElementById('ghRepo').value = localStorage.getItem('asalnulis_repo') || 'usudo218/blog';
+                
+                syncFromGitHub();
             }
+        }
+
+        function saveConfig() {
+            localStorage.setItem('asalnulis_token', document.getElementById('ghToken').value.trim());
+            localStorage.setItem('asalnulis_repo', document.getElementById('ghRepo').value.trim());
         }
 
         function logout() {
@@ -231,7 +255,23 @@
             window.location.reload();
         }
 
-        let articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
+        let articles = [];
+
+        // SYNC LANGSUNG DARI GITHUB
+        async function syncFromGitHub() {
+            const repo = document.getElementById('ghRepo').value.trim();
+            try {
+                const res = await fetch(`https://raw.githubusercontent.com/${repo}/main/asalnulis_articles.json?v=` + new Date().getTime());
+                if(res.ok) {
+                    articles = await res.json();
+                    localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
+                    renderAdminList();
+                }
+            } catch(e) {
+                articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
+                renderAdminList();
+            }
+        }
 
         function renderAdminList() {
             const listEl = document.getElementById('adminArticleList');
@@ -240,7 +280,7 @@
             countEl.innerText = articles.length;
 
             if (articles.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">Belum ada tulisan tersimpan secara lokal.</div>`;
+                listEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">Belum ada artikel.</div>`;
                 return;
             }
 
@@ -256,8 +296,8 @@
                         
                         <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs font-bold">
                             <div class="flex items-center gap-2 text-slate-400 text-[10px]">
-                                ${art.image ? '<i class="fa-solid fa-image text-emerald-600" title="Ada Gambar"></i>' : ''}
-                                ${art.audio ? '<i class="fa-solid fa-music text-indigo-600" title="Ada Backsound"></i>' : ''}
+                                ${art.image ? '<i class="fa-solid fa-image text-emerald-600"></i>' : ''}
+                                ${art.audio ? '<i class="fa-solid fa-music text-indigo-600"></i>' : ''}
                             </div>
                             <div class="flex items-center gap-2">
                                 <button onclick="editArticle(${index})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
@@ -268,28 +308,24 @@
             });
         }
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { document.getElementById('imageData').value = e.target.result; }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function handleAudioUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { document.getElementById('audioData').value = e.target.result; }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function saveArticle(e) {
+        // SIMPAN & DONGKRAK KE GITHUB SECARA OTOMATIS
+        async function saveArticle(e) {
             e.preventDefault();
+            saveConfig();
+
+            const token = document.getElementById('ghToken').value.trim();
+            const repo = document.getElementById('ghRepo').value.trim();
+
+            if (!token) {
+                alert('Harap masukkan GitHub Personal Token Anda terlebih dahulu agar bisa Auto-Sync!');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mempublikasikan ke GitHub...`;
+
             const editIndex = parseInt(document.getElementById('editIndex').value);
-            
             const articleObj = {
                 title: document.getElementById('articleTitle').value,
                 date: document.getElementById('articleDate').value,
@@ -307,10 +343,52 @@
                 articles[editIndex] = articleObj;
             }
 
-            localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
-            resetForm();
-            renderAdminList();
-            alert('Artikel berhasil disimpan!');
+            // AUTO PUSH TO GITHUB API
+            try {
+                // 1. Ambil SHA file lama dari GitHub
+                const getFile = await fetch(`https://api.github.com/repos/${repo}/contents/asalnulis_articles.json`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                
+                let sha = "";
+                if (getFile.ok) {
+                    const fileData = await getFile.json();
+                    sha = fileData.sha;
+                }
+
+                // 2. Upload/Commit file JSON baru
+                const contentUnicode = new TextEncoder().encode(JSON.stringify(articles, null, 2));
+                const base64Content = btoa(String.fromCharCode(...contentUnicode));
+
+                const updateFile = await fetch(`https://api.github.com/repos/${repo}/contents/asalnulis_articles.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Update tulisan: ${articleObj.title}`,
+                        content: base64Content,
+                        sha: sha ? sha : undefined
+                    })
+                });
+
+                if (updateFile.ok) {
+                    localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
+                    resetForm();
+                    renderAdminList();
+                    alert('BERHASIL! Artikel telah dipublikasikan dan tersimpan otomatis di GitHub.');
+                } else {
+                    const errErr = await updateFile.json();
+                    alert('Gagal push ke GitHub: ' + errErr.message);
+                }
+            } catch(err) {
+                alert('Terjadi kesalahan jaringan saat Auto-Sync!');
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-sm"></i> Simpan & Langsung Auto-Publish ke GitHub`;
+            }
         }
 
         function editArticle(index) {
@@ -333,8 +411,7 @@
         function deleteArticle(index) {
             if (confirm('Yakin ingin menghapus tulisan ini?')) {
                 articles.splice(index, 1);
-                localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
-                renderAdminList();
+                saveArticle(new Event('submit'));
             }
         }
 
@@ -344,16 +421,6 @@
             document.getElementById('articleDate').valueAsDate = new Date();
             document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru';
             document.getElementById('cancelEditBtn').classList.add('hidden');
-        }
-
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(articles, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "asalnulis_articles.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
 
         checkAuth();
