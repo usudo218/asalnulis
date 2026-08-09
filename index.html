@@ -46,7 +46,6 @@
                     <a href="about.html" class="hover:text-black transition">Tentang Penulis</a>
                 </nav>
 
-                <!-- CTA Button (Tombol Login Admin) -->
                 <div class="hidden lg:flex items-center space-x-4">
                     <a href="admin.html" class="px-6 py-2.5 bg-black text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2 hover:bg-slate-800 transition">
                         <i class="fa-solid fa-right-to-bracket text-base"></i>
@@ -58,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl">
             <a href="index.html" class="block px-4 py-2 rounded-xl bg-slate-100 font-bold">Beranda</a>
             <a href="daftar-isi.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Daftar Isi</a>
@@ -69,7 +67,7 @@
         </div>
     </header>
 
-    <!-- Hero Section (Narasi Sarkas Pilihan 1) -->
+    <!-- Hero Section -->
     <section class="pt-32 pb-16 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <span class="px-3.5 py-1.5 bg-white/10 text-slate-200 text-xs font-extrabold rounded-lg uppercase tracking-wider">Ruang Baca & Menolak Lupa</span>
@@ -82,20 +80,16 @@
 
     <!-- Main Content Area -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 space-y-12">
-        
-        <!-- Grid Kartu Artikel Terbaru -->
         <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
 
-        <!-- Tombol Menuju Daftar Isi Lengkap -->
         <div class="text-center pt-6">
             <a href="daftar-isi.html" class="inline-flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-800 hover:scale-105 transition shadow-lg">
-                <span>Buka Arsip Daftar Isi Lengkap (29+ Tulisan)</span>
+                <span>Buka Arsip Daftar Isi Lengkap</span>
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
         </div>
     </main>
 
-    <!-- Modal Pop-up Container -->
     <div id="modals-container"></div>
 
     <!-- Footer -->
@@ -117,43 +111,69 @@
             if (modal) modal.classList.toggle('hidden');
         }
 
-        const featuredArticles = [
-            { id: 'f-1', title: "GURU VS SKIBIDI: Menangis di Pojok Kelas Hadapi Gen Alpha", category: "RASAN-RASAN", author: "AGUS TJAKRA", excerpt: "Dilema pendidik mengimbangi dunia digital Gen Alpha yang bergerak secepat kilat.", content: "Dunia pendidikan sedang diuji dengan fenomena bahasa dan tren digital baru..." },
-            { id: 'f-2', title: "Symphony di Ruang Pengap : Menarikan Dansa Kematian Logika", category: "ASAL NULIS", author: "AGUS TJAKRA", excerpt: "Catatan kritis tentang hilangnya pertimbangan akal sehat dalam rutinitas harian.", content: "Di ruang-ruang ber-AC yang tertutup rapat, logika sering kali dikesampingkan..." },
-            { id: 'f-3', title: "Diplomasi Es Teh: Ketika Gelas Plastik Lebih Galau dari Nasib Jomblo", category: "FIKSIANA", author: "AGUS TJAKRA", excerpt: "Cerita ringan nan satire yang lahir dari sudut warung kopi pinggir jalan.", content: "Es teh manis di meja kayu itu perlahan mulai mencair, sama seperti wacana manis sore ini..." }
-        ];
+        async function loadArticles() {
+            let articles = [];
+            try {
+                const res = await fetch('asalnulis_articles.json');
+                if (res.ok) articles = await res.json();
+            } catch(e) {}
 
-        function renderArticles() {
+            if (!articles || articles.length === 0) {
+                articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
+            }
+
             const grid = document.getElementById('articles-grid');
             const modals = document.getElementById('modals-container');
             grid.innerHTML = ''; modals.innerHTML = '';
 
-            featuredArticles.forEach(art => {
+            if (articles.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white p-12 text-center rounded-3xl border border-slate-200">
+                        <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-600 font-bold text-base">Belum Ada Tulisan Dipublikasikan</p>
+                        <p class="text-slate-400 text-xs mt-1">Silakan masuk ke menu Admin untuk mempublikasikan naskah baru.</p>
+                    </div>`;
+                return;
+            }
+
+            articles.forEach((art, index) => {
+                const modalId = `modal-f-${index}`;
+                
                 grid.innerHTML += `
                     <article class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition flex flex-col justify-between">
+                        ${art.image ? `<img src="${art.image}" class="w-full h-48 object-cover border-b border-slate-100">` : ''}
                         <div class="p-6 space-y-3">
-                            <span class="bg-black text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">${art.category}</span>
+                            <div class="flex items-center justify-between text-[10px] font-bold text-slate-400">
+                                <span class="bg-black text-white px-3 py-1 rounded-full uppercase tracking-wider">${art.category}</span>
+                                <span><i class="fa-regular fa-calendar-days mr-1"></i>${art.date || '-'}</span>
+                            </div>
                             <h3 class="font-bold text-slate-900 text-lg leading-snug">${art.title}</h3>
                             <p class="text-xs text-slate-600 line-clamp-3">${art.excerpt}</p>
                         </div>
-                        <div class="p-6 pt-0">
-                            <button onclick="toggleModal('modal-${art.id}')" class="text-xs font-bold text-black flex items-center gap-1">Baca Tulisan <i class="fa-solid fa-arrow-right"></i></button>
+                        <div class="p-6 pt-0 flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400 font-semibold"><i class="fa-regular fa-clock mr-1"></i>${art.readTime || '3 mnt'}</span>
+                            <button onclick="toggleModal('${modalId}')" class="text-xs font-bold text-black flex items-center gap-1">Baca Tulisan <i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </article>`;
 
                 modals.innerHTML += `
-                    <div id="modal-${art.id}" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-                        <div class="bg-white max-w-2xl w-full rounded-3xl p-6 relative shadow-2xl my-auto">
-                            <button onclick="toggleModal('modal-${art.id}')" class="absolute top-4 right-4 text-slate-400 font-bold">✕</button>
-                            <span class="text-xs font-bold text-black uppercase">${art.category}</span>
-                            <h2 class="text-xl font-bold mt-1 mb-4">${art.title}</h2>
-                            <p class="text-sm text-slate-600">${art.content}</p>
+                    <div id="${modalId}" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div class="bg-white max-w-2xl w-full rounded-3xl p-6 sm:p-8 relative shadow-2xl my-auto max-h-[90vh] overflow-y-auto">
+                            <button onclick="toggleModal('${modalId}')" class="absolute top-4 right-4 text-slate-400 hover:text-black font-bold text-lg">✕</button>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-xs font-bold text-white bg-black px-2.5 py-0.5 rounded-md uppercase">${art.category}</span>
+                                <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar-days mr-1"></i>${art.date || '-'}</span>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-black mt-1 mb-3 text-slate-900">${art.title}</h2>
+                            ${art.image ? `<img src="${art.image}" class="w-full h-56 object-cover rounded-2xl mb-4 border border-slate-100">` : ''}
+                            ${art.audio ? `<audio controls class="w-full mb-4"><source src="${art.audio}"></audio>` : ''}
+                            <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line text-justify">${art.content}</div>
                         </div>
                     </div>`;
             });
         }
 
-        renderArticles();
+        loadArticles();
     </script>
 </body>
 </html>
