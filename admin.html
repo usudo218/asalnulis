@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin & Editor - Asal Nulis</title>
+    
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/usudo218/blog/main/pp.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-100 antialiased selection:bg-black selection:text-white flex flex-col min-h-screen">
+
+    <!-- SECTION LOGIN FORM (Tampil jika belum login) -->
+    <div id="loginSection" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white max-w-md w-full rounded-3xl p-8 shadow-2xl border border-slate-200 text-center space-y-6">
+            <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto shadow-lg">
+                AN
+            </div>
+            <div>
+                <h1 class="text-xl font-black text-slate-900 uppercase">Akses Editor Admin</h1>
+                <p class="text-xs text-slate-400 font-semibold mt-1">Masukkan kata sandi terenkripsi untuk mengelola naskah.</p>
+            </div>
+
+            <form onsubmit="verifyPassword(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Kata Sandi (Password)</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="password" id="passwordInput" required placeholder="••••••••" 
+                               class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
+                    </div>
+                </div>
+                <div id="loginError" class="text-xs font-bold text-rose-600 hidden text-center">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Kata sandi salah!
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md">
+                    Masuk ke Panel Editor
+                </button>
+            </form>
+            
+            <div class="pt-2 border-t border-slate-100">
+                <a href="index.html" class="text-xs font-bold text-slate-400 hover:text-black transition">← Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PANEL ADMIN (Tersembunyi secara default sampai login berhasil) -->
+    <div id="adminPanel" class="hidden flex-col min-h-screen">
+        <!-- Header / Navbar Admin -->
+        <header class="fixed top-0 left-0 right-0 z-40 glass-header border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <a href="index.html" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md">AN</div>
+                        <div class="border-l border-slate-300 pl-3">
+                            <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">PANEL EDITOR</span>
+                            <span class="text-[10px] font-bold text-rose-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
+                        </div>
+                    </a>
+
+                    <nav class="flex items-center space-x-3 text-xs font-bold">
+                        <a href="index.html" target="_blank" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition">
+                            <i class="fa-solid fa-globe mr-1"></i> Lihat Blog
+                        </a>
+                        <button onclick="logout()" class="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition">
+                            <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Admin Container -->
+        <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-28 pb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- FORM EDITOR TULISAN (Kiri - 7 Kolom) -->
+                <section class="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <h1 class="text-lg font-black uppercase tracking-tight text-slate-900" id="formTitle">
+                            <i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru
+                        </h1>
+                        <button type="button" onclick="resetForm()" class="text-xs text-slate-400 hover:text-rose-600 font-bold hidden" id="cancelEditBtn">
+                            ✕ Batal Edit
+                        </button>
+                    </div>
+
+                    <form id="articleForm" onsubmit="saveArticle(event)" class="space-y-5">
+                        <input type="hidden" id="editIndex" value="-1">
+
+                        <!-- Judul Naskah -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Judul Tulisan / Naskah</label>
+                            <input type="text" id="articleTitle" required placeholder="Contoh: SKP, TPP, dan Seni Bertahan Hidup..." 
+                                   class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
+                        </div>
+
+                        <!-- Kategori Topik -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Topik Utama</label>
+                                <select id="articleCategory" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
+                                    <option value="ASAL NULIS">ASAL NULIS</option>
+                                    <option value="RASAN-RASAN">RASAN-RASAN</option>
+                                    <option value="FIKSIANA">FIKSIANA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Estimasi Waktu Baca</label>
+                                <input type="text" id="articleReadTime" placeholder="Contoh: 3 mnt" value="3 mnt" 
+                                       class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
+                            </div>
+                        </div>
+
+                        <!-- Upload Gambar Sampul (.WebP / JPG / PNG) -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Gambar Sampul (.WebP / JPG / PNG)</label>
+                            <input type="file" id="imageInput" accept="image/webp, image/jpeg, image/png" onchange="previewImage(event)" 
+                                   class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:bg-slate-800 transition">
+                            <input type="hidden" id="imageData">
+                            <div id="imagePreviewContainer" class="mt-3 hidden">
+                                <img id="imagePreview" src="" class="h-32 w-full object-cover rounded-xl border border-slate-200">
+                            </div>
+                        </div>
+
+                        <!-- Upload Backsound Audio -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Backsound Audio (.MP3 / WAV / OGG)</label>
+                            <input type="file" id="audioInput" accept="audio/mp3, audio/wav, audio/ogg" onchange="handleAudioUpload(event)" 
+                                   class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-200 file:text-slate-800 hover:file:bg-slate-300 transition">
+                            <input type="hidden" id="audioData">
+                            <div id="audioPreviewContainer" class="mt-2 hidden">
+                                <audio id="audioPreview" controls class="w-full h-8 mt-1"></audio>
+                            </div>
+                        </div>
+
+                        <!-- Narasi Ringkas (Excerpt) -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Ringkasan / Sub-judul Sarkas</label>
+                            <textarea id="articleExcerpt" rows="2" required placeholder="Tuliskan 1 kalimat sarkas pembuka tulisan..." 
+                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition"></textarea>
+                        </div>
+
+                        <!-- Isi Lengkap Artikel -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Isi Lengkap Naskah</label>
+                            <textarea id="articleContent" rows="8" required placeholder="Tuliskan isi naskah lengkap di sini. Gunakan baris baru untuk paragraf..." 
+                                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition"></textarea>
+                        </div>
+
+                        <!-- Button Action -->
+                        <button type="submit" class="w-full py-3.5 bg-black text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-slate-800 transition shadow-md">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan & Publikasikan
+                        </button>
+                    </form>
+                </section>
+
+                <!-- DAFTAR & EDIT TULISAN (Kanan - 5 Kolom) -->
+                <section class="lg:col-span-5 space-y-4">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <h2 class="text-xs font-black uppercase tracking-wider text-slate-900">
+                                Kelola & Edit Tulisan (<span id="savedCount">0</span>)
+                            </h2>
+                            <button onclick="exportData()" class="text-[10px] font-bold text-blue-600 hover:underline">
+                                <i class="fa-solid fa-download mr-1"></i> Export JSON
+                            </button>
+                        </div>
+
+                        <!-- List Item Artikel -->
+                        <div class="space-y-3 max-h-[650px] overflow-y-auto pr-1" id="adminArticleList"></div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-black text-slate-400 py-6 border-t border-slate-800 text-center text-xs">
+            asalnulis.web.id — Panel Pengelolaan Konten Terproteksi
+        </footer>
+    </div>
+
+    <!-- Script Keamanan SHA-256 & Logika Admin -->
+    <script>
+        // Password Hash (SHA-256) untuk 'admin123'
+        const CORRECT_PASSWORD_HASH = "// Password Hash (SHA-256) untuk 'admin123'
+const CORRECT_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+
+        // Fungsi Enkripsi SHA-256 Asinkron
+        async function sha256(str) {
+            const buffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Verifikasi Login
+        async function verifyPassword(e) {
+            e.preventDefault();
+            const inputPass = document.getElementById('passwordInput').value;
+            const inputHash = await sha256(inputPass);
+
+            if (inputHash === CORRECT_PASSWORD_HASH) {
+                sessionStorage.setItem('asalnulis_logged_in', 'true');
+                checkAuth();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function checkAuth() {
+            const isLoggedIn = sessionStorage.getItem('asalnulis_logged_in') === 'true';
+            if (isLoggedIn) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('adminPanel').classList.add('flex');
+                renderAdminList();
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('asalnulis_logged_in');
+            window.location.reload();
+        }
+
+        // --- SISTEM PENGELOLAAN ARTIKEL ---
+        let articles = JSON.parse(localStorage.getItem('asalnulis_articles')) || [];
+
+        function renderAdminList() {
+            const listEl = document.getElementById('adminArticleList');
+            const countEl = document.getElementById('savedCount');
+            listEl.innerHTML = '';
+            countEl.innerText = articles.length;
+
+            if (articles.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">Belum ada tulisan tersimpan secara lokal.</div>`;
+                return;
+            }
+
+            articles.forEach((art, index) => {
+                listEl.innerHTML += `
+                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-black px-2 py-0.5 rounded bg-black text-white uppercase">${art.category}</span>
+                            <span class="text-[10px] text-slate-400">${art.readTime || '3 mnt'}</span>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-900 leading-snug">${art.title}</h3>
+                        <p class="text-[11px] text-slate-500 line-clamp-2">${art.excerpt}</p>
+                        
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs font-bold">
+                            <div class="flex items-center gap-2 text-slate-400 text-[10px]">
+                                ${art.image ? '<i class="fa-solid fa-image text-emerald-600" title="Ada Gambar"></i>' : ''}
+                                ${art.audio ? '<i class="fa-solid fa-music text-indigo-600" title="Ada Backsound"></i>' : ''}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="editArticle(${index})" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                                <button onclick="deleteArticle(${index})" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i> Hapus</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imageData').value = e.target.result;
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleAudioUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('audioData').value = e.target.result;
+                    document.getElementById('audioPreview').src = e.target.result;
+                    document.getElementById('audioPreviewContainer').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveArticle(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+            
+            const articleObj = {
+                title: document.getElementById('articleTitle').value,
+                category: document.getElementById('articleCategory').value,
+                readTime: document.getElementById('articleReadTime').value,
+                image: document.getElementById('imageData').value,
+                audio: document.getElementById('audioData').value,
+                excerpt: document.getElementById('articleExcerpt').value,
+                content: document.getElementById('articleContent').value,
+                date: new Date().toLocaleDateString('id-ID')
+            };
+
+            if (editIndex === -1) {
+                articles.unshift(articleObj);
+            } else {
+                articles[editIndex] = articleObj;
+            }
+
+            localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
+            resetForm();
+            renderAdminList();
+            alert(editIndex === -1 ? 'Artikel berhasil disimpan!' : 'Artikel berhasil diperbarui!');
+        }
+
+        function editArticle(index) {
+            const art = articles[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('articleTitle').value = art.title;
+            document.getElementById('articleCategory').value = art.category;
+            document.getElementById('articleReadTime').value = art.readTime || '3 mnt';
+            document.getElementById('articleExcerpt').value = art.excerpt;
+            document.getElementById('articleContent').value = art.content;
+
+            if (art.image) {
+                document.getElementById('imageData').value = art.image;
+                document.getElementById('imagePreview').src = art.image;
+                document.getElementById('imagePreviewContainer').classList.remove('hidden');
+            }
+
+            if (art.audio) {
+                document.getElementById('audioData').value = art.audio;
+                document.getElementById('audioPreview').src = art.audio;
+                document.getElementById('audioPreviewContainer').classList.remove('hidden');
+            }
+
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-blue-600 mr-2"></i> Edit Tulisan';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteArticle(index) {
+            if (confirm('Yakin ingin menghapus tulisan ini?')) {
+                articles.splice(index, 1);
+                localStorage.setItem('asalnulis_articles', JSON.stringify(articles));
+                renderAdminList();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('articleForm').reset();
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('imageData').value = '';
+            document.getElementById('audioData').value = '';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            document.getElementById('audioPreviewContainer').classList.add('hidden');
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-nib mr-2"></i> Tulis Artikel Baru';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(articles, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "asalnulis_articles.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Cek status autentikasi saat pertama kali dimuat
+        checkAuth();
+    </script>
+</body>
+</html>

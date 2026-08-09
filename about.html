@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Penulis - Asal Nulis</title>
+    
+    <meta name="description" content="Mengenal sosok di balik layar asalnulis.web.id dan alasan hadirnya ruang tulisan tanpa pemanis buatan ini.">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/usudo218/blog/main/pp.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'Poppins', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+        blockquote { border-left: 4px solid #000000; }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50/50 antialiased selection:bg-black selection:text-white flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-slate-200/80 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo Official -->
+                <a href="index.html" class="flex items-center space-x-3 group py-1">
+                    <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md group-hover:scale-105 transition duration-300">
+                        AN
+                    </div>
+                    <div class="border-l border-slate-300 pl-3">
+                        <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">ASAL NULIS</span>
+                        <span class="text-[10px] font-bold text-blue-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600">
+                    <a href="index.html" class="hover:text-black transition">Beranda</a>
+                    <a href="daftar-isi.html" class="hover:text-black transition">Daftar Isi</a>
+                    <a href="about.html" class="text-black font-extrabold border-b-2 border-black pb-1">Tentang Penulis</a>
+                </nav>
+
+                <!-- CTA Button (Tombol Login Admin) -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <a href="admin.html" class="px-6 py-2.5 bg-black text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2 hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-right-to-bracket text-base"></i>
+                        <span>Login</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="menu-btn" class="lg:hidden text-slate-700 p-2">
+                    <i class="fa-solid fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl">
+            <a href="index.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Beranda</a>
+            <a href="daftar-isi.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Daftar Isi</a>
+            <a href="about.html" class="block px-4 py-2 rounded-xl bg-slate-100 font-bold text-slate-900">Tentang Penulis</a>
+            <a href="admin.html" class="block text-center px-4 py-3 bg-black text-white font-bold rounded-xl text-sm shadow-md mt-4">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>Login Admin
+            </a>
+        </div>
+    </header>
+
+    <!-- Banner Header Section -->
+    <section class="pt-32 pb-14 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-center relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <span class="px-3.5 py-1.5 bg-white/10 text-slate-200 text-xs font-extrabold rounded-lg uppercase tracking-wider">Sosok Di Balik Layar</span>
+            <h1 class="text-3xl sm:text-5xl font-black mt-3 uppercase tracking-tight">Tentang Penulis</h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mt-3 leading-relaxed">
+                Mengenal sosok di balik layar yang memilih menumpahkan racikan sindiran dan menertawakan absurditas dunia di asalnulis.web.id[cite: 3].
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-10">
+        <div class="bg-white p-6 sm:p-12 rounded-3xl shadow-sm border border-slate-200/80">
+            
+            <!-- Profil Avatar & Header -->
+            <div class="text-center mb-8 pb-8 border-b border-slate-100">
+                <div class="relative inline-block p-1.5 bg-slate-50 rounded-full border border-slate-200 shadow-sm mb-4">
+                    <img src="https://raw.githubusercontent.com/usudo218/blog/main/pp.png" 
+                         alt="Agus Tjakra" 
+                         class="w-28 h-28 sm:w-36 sm:h-36 rounded-full mx-auto object-contain bg-white">
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tight">Agus Tjakra</h2>
+                <p class="text-slate-400 font-extrabold uppercase text-[10px] tracking-[0.3em] mt-1.5">Penulis Pemula</p>
+            </div>
+
+            <!-- Narasi Utama / Isi Pesan -->
+            <div class="text-slate-700 leading-relaxed space-y-5 text-xs sm:text-sm text-justify">
+                <p class="text-center italic font-semibold text-slate-900 text-sm sm:text-base">
+                    "Selamat datang di gubuk digital tempat menampung sisa-sisa akal sehat."
+                </p>
+                
+                <p>
+                    Nama <strong>Penulis Pemula</strong> saya pilih bukan karena saya baru kemarin sore mengenal tulisan, melainkan sebagai pengingat bahwa setiap kali saya duduk dan mulai mengetik, saya sedang belajar kembali untuk jujur pada pikiran sendiri[cite: 3]. Tempat ini saya namai <strong>Asal Nulis</strong>, bukan berarti ditulis tanpa arah, melainkan sebagai bentuk perlawanan agar ide tidak terus-menerus terbungkam oleh rasa ragu atau formalitas yang membosankan[cite: 3].
+                </p>
+
+                <blockquote class="p-4 my-5 bg-slate-50 text-slate-800 italic font-medium rounded-r-xl text-xs sm:text-sm">
+                    "Menulis adalah cara saya mengikat makna sebelum ia terbang terbawa angin. Merawat ingatan agar tidak lekas hilang dimakan lupa."[cite: 3]
+                </blockquote>
+
+                <p>
+                    Melalui <strong>asalnulis.web.id</strong>, seluruh isi pikiran saya bagi ke dalam tiga ruang baca utama[cite: 3]:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 my-4">
+                    <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1">
+                        <span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-slate-900 text-white uppercase tracking-wider">ASAL NULIS</span>
+                        <p class="text-[11px] text-slate-600 leading-snug pt-1">Catatan lepas, tangkapan momen, dan ulasan ringan tanpa pemanis buatan[cite: 3].</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1">
+                        <span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-rose-600 text-white uppercase tracking-wider">RASAN-RASAN</span>
+                        <p class="text-[11px] text-slate-600 leading-snug pt-1">Sudut pandang tajam, sindiran, dan reaksi atas fenomena sosial yang makin absurd[cite: 3].</p>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1">
+                        <span class="text-[9px] font-black px-2 py-0.5 rounded-md bg-indigo-600 text-white uppercase tracking-wider">FIKSIANA</span>
+                        <p class="text-[11px] text-slate-600 leading-snug pt-1">Ruang imajinasi penuh ironi berupa prosa dan cerita pendek reflektif[cite: 3].</p>
+                    </div>
+                </div>
+
+                <p>
+                    Dunia hari ini bergerak terlalu cepat dan sering kali absurd[cite: 3]. Kadang sebuah momen absurd baru saja terjadi, ia sudah tertimbun oleh hal gila lainnya di hari esok[cite: 3]. Blog ini adalah ikhtiar kecil untuk mengabadikan peristiwa-peristiwa itu—biar kita bisa menertawakannya bersama nanti[cite: 3].
+                </p>
+            </div>
+
+            <!-- Footer Inside Card -->
+            <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block">Identitas Platform</span>
+                    <span class="text-xs font-bold text-slate-800">asalnulis.web.id — Merawat Akal Sehat</span>
+                </div>
+                <a href="https://asalnulis.web.id" class="inline-flex items-center gap-2 bg-black text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-slate-800 transition shadow-sm">
+                    <span>Kunjungi Domain</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-2">
+            <p class="font-bold text-white text-sm">asalnulis.web.id — Media Catatan & Sindiran Realita</p>
+            <p>Menuliskan absurditas, merawat akal sehat, menertawakan zaman.</p>
+            <p class="text-[10px] tracking-widest uppercase text-slate-500 pt-1">&copy; 2026 asalnulis.web.id. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    </script>
+</body>
+</html>

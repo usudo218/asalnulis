@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asal Nulis - Media Catatan & Sindiran Realita</title>
+    
+    <meta name="description" content="Kumpulan racikan sindiran, rasan-rasan fenomena sosial yang absurd, fiksiana tanpa pemanis buatan, dan catatan harian di asalnulis.web.id.">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/usudo218/blog/main/pp.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50 antialiased selection:bg-black selection:text-white flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-header border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md group-hover:scale-105 transition">AN</div>
+                    <div class="border-l border-slate-300 pl-3">
+                        <span class="text-base font-extrabold text-slate-900 tracking-tight block leading-none">ASAL NULIS</span>
+                        <span class="text-[10px] font-bold text-blue-600 tracking-widest uppercase block mt-1">asalnulis.web.id</span>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-600">
+                    <a href="index.html" class="text-black font-extrabold border-b-2 border-black pb-1">Beranda</a>
+                    <a href="daftar-isi.html" class="hover:text-black transition">Daftar Isi</a>
+                    <a href="about.html" class="hover:text-black transition">Tentang Penulis</a>
+                </nav>
+
+                <!-- CTA Button (Tombol Login Admin) -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <a href="admin.html" class="px-6 py-2.5 bg-black text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2 hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-right-to-bracket text-base"></i>
+                        <span>Login</span>
+                    </a>
+                </div>
+
+                <button id="menu-btn" class="lg:hidden text-slate-700 p-2"><i class="fa-solid fa-bars text-2xl"></i></button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-2 shadow-xl">
+            <a href="index.html" class="block px-4 py-2 rounded-xl bg-slate-100 font-bold">Beranda</a>
+            <a href="daftar-isi.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Daftar Isi</a>
+            <a href="about.html" class="block px-4 py-2 rounded-xl text-slate-700 font-semibold">Tentang Penulis</a>
+            <a href="admin.html" class="block text-center px-4 py-3 bg-black text-white font-bold rounded-xl text-sm shadow-md mt-4">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>Login Admin
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section (Narasi Sarkas Pilihan 1) -->
+    <section class="pt-32 pb-16 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white text-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <span class="px-3.5 py-1.5 bg-white/10 text-slate-200 text-xs font-extrabold rounded-lg uppercase tracking-wider">Ruang Baca & Menolak Lupa</span>
+            <h1 class="text-3xl sm:text-5xl font-black mt-3 uppercase tracking-tight">ASAL NULIS</h1>
+            <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mt-3 leading-relaxed">
+                Muak melihat realita? Sama. Ini cuma kumpulan racikan sindiran, rasan-rasan fenomena sosial yang kelewat absurd, fiksiana tanpa pemanis buatan, dan catatan harian tentang betapa makin anehnya dunia hari ini.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 space-y-12">
+        
+        <!-- Grid Kartu Artikel Terbaru -->
+        <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+        <!-- Tombol Menuju Daftar Isi Lengkap -->
+        <div class="text-center pt-6">
+            <a href="daftar-isi.html" class="inline-flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-slate-800 hover:scale-105 transition shadow-lg">
+                <span>Buka Arsip Daftar Isi Lengkap (29+ Tulisan)</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </main>
+
+    <!-- Modal Pop-up Container -->
+    <div id="modals-container"></div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-slate-400 py-10 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-2">
+            <p class="font-bold text-white text-sm">asalnulis.web.id — Media Catatan & Sindiran Realita</p>
+            <p>Menuliskan absurditas, merawat akal sehat, menertawakan zaman.</p>
+            <p class="text-[10px] tracking-widest uppercase text-slate-500 pt-2">&copy; 2026 asalnulis.web.id. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.toggle('hidden');
+        }
+
+        const featuredArticles = [
+            { id: 'f-1', title: "GURU VS SKIBIDI: Menangis di Pojok Kelas Hadapi Gen Alpha", category: "RASAN-RASAN", author: "AGUS TJAKRA", excerpt: "Dilema pendidik mengimbangi dunia digital Gen Alpha yang bergerak secepat kilat.", content: "Dunia pendidikan sedang diuji dengan fenomena bahasa dan tren digital baru..." },
+            { id: 'f-2', title: "Symphony di Ruang Pengap : Menarikan Dansa Kematian Logika", category: "ASAL NULIS", author: "AGUS TJAKRA", excerpt: "Catatan kritis tentang hilangnya pertimbangan akal sehat dalam rutinitas harian.", content: "Di ruang-ruang ber-AC yang tertutup rapat, logika sering kali dikesampingkan..." },
+            { id: 'f-3', title: "Diplomasi Es Teh: Ketika Gelas Plastik Lebih Galau dari Nasib Jomblo", category: "FIKSIANA", author: "AGUS TJAKRA", excerpt: "Cerita ringan nan satire yang lahir dari sudut warung kopi pinggir jalan.", content: "Es teh manis di meja kayu itu perlahan mulai mencair, sama seperti wacana manis sore ini..." }
+        ];
+
+        function renderArticles() {
+            const grid = document.getElementById('articles-grid');
+            const modals = document.getElementById('modals-container');
+            grid.innerHTML = ''; modals.innerHTML = '';
+
+            featuredArticles.forEach(art => {
+                grid.innerHTML += `
+                    <article class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition flex flex-col justify-between">
+                        <div class="p-6 space-y-3">
+                            <span class="bg-black text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">${art.category}</span>
+                            <h3 class="font-bold text-slate-900 text-lg leading-snug">${art.title}</h3>
+                            <p class="text-xs text-slate-600 line-clamp-3">${art.excerpt}</p>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <button onclick="toggleModal('modal-${art.id}')" class="text-xs font-bold text-black flex items-center gap-1">Baca Tulisan <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </article>`;
+
+                modals.innerHTML += `
+                    <div id="modal-${art.id}" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                        <div class="bg-white max-w-2xl w-full rounded-3xl p-6 relative shadow-2xl my-auto">
+                            <button onclick="toggleModal('modal-${art.id}')" class="absolute top-4 right-4 text-slate-400 font-bold">✕</button>
+                            <span class="text-xs font-bold text-black uppercase">${art.category}</span>
+                            <h2 class="text-xl font-bold mt-1 mb-4">${art.title}</h2>
+                            <p class="text-sm text-slate-600">${art.content}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        renderArticles();
+    </script>
+</body>
+</html>
