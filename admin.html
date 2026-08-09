@@ -44,7 +44,7 @@
                     <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-2">Kata Sandi (Password)</label>
                     <div class="relative">
                         <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="password" id="passwordInput" required placeholder="••••••••" 
+                        <input type="password" id="passwordInput" required placeholder="••••••••" autocomplete="current-password"
                                class="w-full pl-10 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition">
                     </div>
                 </div>
@@ -197,47 +197,45 @@
         </footer>
     </div>
 
-    <!-- Script Keamanan Hash Terenkripsi & Logika Admin -->
+    <!-- Script Logika Admin & Proteksi Login -->
     <script>
-        // HASH TERENKRIPSI UNTUK 'admin123' (Aman, password asli tidak terlihat)
-        const PASS_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+        // Enkripsi Hash untuk 'admin123'
+        const HASH_1 = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+        const HASH_2 = "1856716a";
 
-        // Fungsi Hash Sederhana
-        function simpleHash(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash |= 0;
+        // Algoritma Hash Lapis Dua
+        function getHash(s) {
+            let h = 0;
+            for (let i = 0; i < s.length; i++) {
+                h = ((h << 5) - h) + s.charCodeAt(i);
+                h |= 0;
             }
-            return hash.toString(16);
+            return h.toString(16);
         }
 
-        // Verifikasi Password Asinkron & Fallback Hash
         async function verifyPassword(e) {
             e.preventDefault();
-            const inputPass = document.getElementById('passwordInput').value.trim();
-            let isMatched = false;
+            const val = document.getElementById('passwordInput').value.trim();
+            let pass = false;
 
-            // Cek dengan Web Crypto API
-            if (window.crypto && window.crypto.subtle) {
+            // Percobaan 1: Enkripsi Hash Lapis 1
+            if (getHash(val) === HASH_2) {
+                pass = true;
+            }
+
+            // Percobaan 2: Crypto Web API jika didukung browser
+            if (!pass && window.crypto && window.crypto.subtle) {
                 try {
-                    const msgUint8 = new TextEncoder().encode(inputPass);
-                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                    const inputHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                    if (inputHash === PASS_HASH) isMatched = true;
+                    const buf = new TextEncoder().encode(val);
+                    const digest = await crypto.subtle.digest('SHA-256', buf);
+                    const res = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+                    if (res === HASH_1) pass = true;
                 } catch(err) {
                     console.log(err);
                 }
             }
 
-            // Fallback pencocokan jika Crypto diblokir browser
-            if (!isMatched && (inputPass === "admin123" || simpleHash(inputPass) === "1856716a")) {
-                isMatched = true;
-            }
-
-            if (isMatched) {
+            if (pass) {
                 sessionStorage.setItem('asalnulis_logged_in', 'true');
                 document.getElementById('loginError').classList.add('hidden');
                 checkAuth();
