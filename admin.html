@@ -10,6 +10,26 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8 min-h-screen flex items-center justify-center">
 
+    <div id="login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 text-center space-y-5">
+            <div class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center font-black text-2xl mx-auto shadow-md">
+                AN
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">Autentikasi Admin</h2>
+                <p class="text-xs text-slate-500 mt-1">Masukkan GitHub Personal Access Token (PAT) Anda untuk mengelola konten web.</p>
+            </div>
+            <div class="space-y-3">
+                <input type="password" id="login-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-black focus:outline-none text-center">
+                <button onclick="handleLogin()" id="btn-login" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Masuk ke Dashboard</span>
+                </button>
+            </div>
+            <p class="text-[10px] text-slate-400">Token disimpan di LocalStorage perangkat Anda dan tidak dikirim ke server lain selain GitHub API.</p>
+        </div>
+    </div>
+
     <div id="admin-dashboard" class="w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6 my-8">
         <div class="flex items-center justify-between border-b pb-4">
             <div class="flex items-center gap-3">
@@ -18,31 +38,36 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900">Admin Panel Editor</h1>
-                    <p class="text-xs text-slate-500">usudo218.github.io/asalnulis</p>
+                    <p class="text-xs text-slate-500">Repository: <span id="repo-label" class="font-semibold text-slate-700">usudo218/asalnulis</span></p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
                     <i class="fa-solid fa-globe mr-1"></i> Beranda
                 </a>
-                <a href="daftar-isi.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
-                    <i class="fa-solid fa-list mr-1"></i> Daftar Isi
+                <a href="daftar-isi.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-list mr-1"></i> Arsip
                 </a>
+                <button onclick="handleLogout()" title="Keluar" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
             </div>
         </div>
 
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
-            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Personal Access Token (PAT)</label>
-            <div class="flex gap-2">
-                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
-                <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan Token</button>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span class="font-bold text-slate-700">Sesi Terhubung:</span>
+                <span id="token-preview" class="font-mono text-[11px] text-slate-500">ghp_••••••••••••••••</span>
             </div>
-            <p class="text-[10px] text-slate-400">*Token tersimpan aman di browser Anda untuk sinkronisasi ke repositori: <b>usudo218/asalnulis</b></p>
+            <button onclick="changeTokenPrompt()" class="text-slate-600 hover:text-black font-semibold text-[11px] underline self-start sm:self-auto">
+                Ganti Token GitHub
+            </button>
         </div>
 
         <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
-            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah artikel yang ada.</span>
-            <button type="button" onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Naskah Baru)</button>
+            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah <b id="editing-title-label"></b></span>
+            <button type="button" onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Baru)</button>
         </div>
 
         <form id="article-form" class="space-y-4">
@@ -130,32 +155,82 @@
     </div>
 
     <script>
+        // Sesuaikan nama repo target Anda
         const REPO = "usudo218/asalnulis";
         const BRANCH = "main";
 
         const articleForm = document.getElementById('article-form');
         const editIndicator = document.getElementById('edit-indicator');
         const btnText = document.getElementById('btn-text');
+        const loginModal = document.getElementById('login-modal');
 
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('gh-token').value = localStorage.getItem('an_gh_token') || '';
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchArticleList();
-        });
-
-        function saveToken() {
-            const token = document.getElementById('gh-token').value.trim();
+        // --- SISTEM LOGIN & AUTHENTICATION ---
+        function checkAuth() {
+            const token = localStorage.getItem('an_gh_token');
             if (!token) {
-                alert('Token GitHub tidak boleh kosong!');
-                return;
+                loginModal.classList.remove('hidden');
+            } else {
+                loginModal.classList.add('hidden');
+                document.getElementById('token-preview').innerText = token.substring(0, 6) + '••••••••••••••••' + token.slice(-4);
+                fetchArticleList();
             }
-            localStorage.setItem('an_gh_token', token);
-            alert('Token GitHub berhasil disimpan!');
-            fetchArticleList();
         }
 
-        // Helper Base64 Binary untuk Media
+        async function handleLogin() {
+            const tokenInput = document.getElementById('login-token-input');
+            const token = tokenInput.value.trim();
+            const btn = document.getElementById('btn-login');
+
+            if (!token) {
+                alert('Silakan masukkan token GitHub PAT Anda!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+
+            try {
+                // Verifikasi validitas token dengan memanggil user API github
+                const res = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    localStorage.setItem('an_gh_token', token);
+                    tokenInput.value = '';
+                    loginModal.classList.add('hidden');
+                    checkAuth();
+                } else {
+                    alert('Token tidak valid atau hak akses ditolak! Pastikan token memiliki scope "repo".');
+                }
+            } catch (err) {
+                alert('Gagal memverifikasi token: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-key"></i> <span>Masuk ke Dashboard</span>';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Yakin ingin keluar dan menghapus token dari browser ini?')) {
+                localStorage.removeItem('an_gh_token');
+                checkAuth();
+            }
+        }
+
+        function changeTokenPrompt() {
+            const newToken = prompt('Masukkan GitHub Personal Access Token (PAT) baru:');
+            if (newToken && newToken.trim() !== '') {
+                localStorage.setItem('an_gh_token', newToken.trim());
+                checkAuth();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', checkAuth);
+
+        // --- HELPER ENCODING ---
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -172,9 +247,8 @@
             });
         }
 
-        // Helper Base64 to UTF-8 (ANTI ERROR URI MALFORMED)
         function b64ToUtf8(str) {
-            const binaryString = window.atob(str);
+            const binaryString = window.atob(str.replace(/\s/g, ''));
             const bytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) {
                 bytes[i] = binaryString.charCodeAt(i);
@@ -182,7 +256,6 @@
             return new TextDecoder('utf-8').decode(bytes);
         }
 
-        // Helper UTF-8 to Base64 (Untuk JSON File)
         function utf8ToB64(str) {
             const bytes = new TextEncoder().encode(str);
             let binary = '';
@@ -192,6 +265,7 @@
             return window.btoa(binary);
         }
 
+        // --- MEDIA UPLOAD ---
         async function uploadMediaFile(file, folder, token) {
             const ext = file.name.split('.').pop().toLowerCase();
             const cleanFolder = folder.endsWith('/') ? folder : folder + '/';
@@ -224,8 +298,7 @@
             if (!fileInput.files || fileInput.files.length === 0) return;
             const token = localStorage.getItem('an_gh_token');
             if (!token) {
-                alert('Silakan masukkan dan simpan GitHub Token Anda di form atas terlebih dahulu!');
-                fileInput.value = '';
+                checkAuth();
                 return;
             }
 
@@ -243,9 +316,9 @@
                 const endPos = contentArea.selectionEnd;
 
                 contentArea.value = contentArea.value.substring(0, startPos) + imgTag + contentArea.value.substring(endPos);
-                alert(`BERHASIL! Gambar tersimpan di GitHub dan disisipkan ke naskah.`);
+                alert('Gambar berhasil diunggah dan disisipkan!');
             } catch (err) {
-                alert('GAGAL UPLOAD GAMBAR: ' + err.message);
+                alert('Gagal upload gambar: ' + err.message);
                 console.error(err);
             } finally {
                 label.innerText = originalText;
@@ -253,6 +326,7 @@
             }
         }
 
+        // --- SUBMIT ARTICLE (CREATE / UPDATE) ---
         articleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('an_gh_token');
@@ -260,7 +334,7 @@
             const submitBtn = document.getElementById('submit-btn');
 
             if (!token) {
-                alert('Silakan masukkan dan simpan GitHub Token Anda terlebih dahulu!');
+                checkAuth();
                 return;
             }
 
@@ -295,7 +369,7 @@
                 const content = document.getElementById('content').value.trim();
 
                 const editFileName = document.getElementById('edit-filename').value;
-                const editSha = document.getElementById('edit-sha').value;
+                let editSha = document.getElementById('edit-sha').value;
 
                 const fileName = editFileName ? editFileName : `article-${Date.now()}.json`;
                 const fileData = {
@@ -306,6 +380,17 @@
 
                 const path = `content/${fileName}`;
                 const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+
+                // Jika sedang mode edit, pastikan SHA ter-update langsung dari repository
+                if (editFileName && !editSha) {
+                    const getFileRes = await fetch(`${url}?ref=${BRANCH}`, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+                    });
+                    if (getFileRes.ok) {
+                        const curData = await getFileRes.json();
+                        editSha = curData.sha;
+                    }
+                }
 
                 const payload = {
                     message: editFileName ? `Update naskah: ${title}` : `Tambah naskah: ${title}`,
@@ -345,18 +430,23 @@
             }
         });
 
+        // --- FETCH LIST ARTICLES ---
         async function fetchArticleList() {
             const listContainer = document.getElementById('article-list-container');
             const token = localStorage.getItem('an_gh_token');
 
-            try {
-                const headers = { 'Accept': 'application/vnd.github+json' };
-                if (token) headers['Authorization'] = `Bearer ${token}`;
+            if (!token) return;
 
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content?t=${Date.now()}`, { headers });
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content?ref=${BRANCH}&t=${Date.now()}`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json'
+                    }
+                });
                 
                 if (!res.ok) {
-                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada folder 'content/' di repo '${REPO}' atau token belum disetel.</p>`;
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Folder 'content/' belum ada atau repo tidak dapat diakses.</p>`;
                     return;
                 }
 
@@ -364,7 +454,7 @@
                 const jsonFiles = files.filter(f => f.name.endsWith('.json'));
 
                 if (jsonFiles.length === 0) {
-                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada naskah yang diterbitkan di repositori ini.</p>`;
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada naskah yang diterbitkan.</p>`;
                     return;
                 }
 
@@ -389,13 +479,12 @@
                         </div>
                     `;
 
-                    // Event listener aman tanpa petik string escaping
                     itemDiv.querySelector('.btn-edit').addEventListener('click', () => {
                         editArticle(file.name, file.sha, file.download_url);
                     });
 
                     itemDiv.querySelector('.btn-delete').addEventListener('click', () => {
-                        deleteArticle(file.name, file.sha);
+                        deleteArticle(file.name);
                     });
 
                     listContainer.appendChild(itemDiv);
@@ -405,28 +494,29 @@
             }
         }
 
-        // FUNGSI EDIT GANDA (CONTENTS API + DIRECT FALLBACK)
+        // --- EDIT ARTICLE ---
         async function editArticle(fileName, sha, downloadUrl) {
             const token = localStorage.getItem('an_gh_token');
             let data = null;
+            let currentSha = sha;
 
             try {
-                const headers = { 'Accept': 'application/vnd.github+json' };
-                if (token) headers['Authorization'] = `Bearer ${token}`;
-
-                // 1. Coba ambil lewat Contents API
-                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content/${fileName}?t=${Date.now()}`, { headers });
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content/${fileName}?ref=${BRANCH}&t=${Date.now()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json'
+                    }
+                });
                 
                 if (res.ok) {
                     const fileObj = await res.json();
+                    currentSha = fileObj.sha;
                     if (fileObj.content) {
-                        const cleanBase64 = fileObj.content.replace(/\s/g, '');
-                        const jsonString = b64ToUtf8(cleanBase64);
-                        data = JSON.parse(jsonString);
+                        data = JSON.parse(b64ToUtf8(fileObj.content));
                     }
                 }
 
-                // 2. Jika payload kosong, ambil via direct download url
+                // Fallback direct download URL jika content kosong
                 if (!data && downloadUrl) {
                     const dlRes = await fetch(`${downloadUrl}?t=${Date.now()}`);
                     if (dlRes.ok) {
@@ -434,11 +524,11 @@
                     }
                 }
 
-                if (!data) throw new Error('Data artikel tidak dapat dibaca dari GitHub.');
+                if (!data) throw new Error('Data artikel gagal diparsing.');
 
-                // Isi Form
+                // Isi nilai ke Form Editor
                 document.getElementById('edit-filename').value = fileName;
-                document.getElementById('edit-sha').value = sha;
+                document.getElementById('edit-sha').value = currentSha;
                 document.getElementById('title').value = data.title || '';
                 document.getElementById('category').value = data.category || 'ASAL NULIS';
                 document.getElementById('post-date').value = data.date ? data.date.split('T')[0] : new Date().toISOString().split('T')[0];
@@ -448,12 +538,13 @@
                 document.getElementById('excerpt').value = data.excerpt || '';
                 document.getElementById('content').value = data.content || '';
 
+                document.getElementById('editing-title-label').innerText = data.title || fileName;
                 editIndicator.classList.remove('hidden');
                 btnText.innerText = 'Simpan Perubahan Naskah';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
-                alert('Gagal membuka editor naskah: ' + err.message);
-                console.error('Detail Error Edit:', err);
+                alert('Gagal membuka naskah untuk diedit: ' + err.message);
+                console.error(err);
             }
         }
 
@@ -462,26 +553,45 @@
             document.getElementById('edit-filename').value = '';
             document.getElementById('edit-sha').value = '';
             document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('image-name').value = '';
+            document.getElementById('audio-name').value = '';
             editIndicator.classList.add('hidden');
             btnText.innerText = 'Terbitkan Naskah Ke GitHub';
         }
 
-        async function deleteArticle(fileName, sha) {
+        // --- DELETE ARTICLE (AUTO GET LATEST SHA) ---
+        async function deleteArticle(fileName) {
             const token = localStorage.getItem('an_gh_token');
 
             if (!token) {
-                alert('Token diperlukan untuk menghapus naskah!');
+                checkAuth();
                 return;
             }
 
-            if (!confirm(`Yakin ingin menghapus naskah "${fileName}" secara permanen dari GitHub?`)) {
+            if (!confirm(`Yakin ingin menghapus naskah "${fileName}" secara permanen dari repositori?`)) {
                 return;
             }
 
             const url = `https://api.github.com/repos/${REPO}/contents/content/${fileName}`;
 
             try {
-                const res = await fetch(url, {
+                // 1. Ambil SHA terbaru file terlebih dahulu agar tidak terjadi conflict
+                const getRes = await fetch(`${url}?ref=${BRANCH}&t=${Date.now()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json'
+                    }
+                });
+
+                if (!getRes.ok) {
+                    throw new Error('File tidak ditemukan di GitHub atau sudah dihapus sebelumnya.');
+                }
+
+                const fileInfo = await getRes.json();
+                const latestSha = fileInfo.sha;
+
+                // 2. Eksekusi DELETE dengan SHA terbaru
+                const deleteRes = await fetch(url, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -490,20 +600,24 @@
                     },
                     body: JSON.stringify({
                         message: `Hapus naskah: ${fileName}`,
-                        sha: sha,
+                        sha: latestSha,
                         branch: BRANCH
                     })
                 });
 
-                if (res.ok) {
-                    alert('Naskah berhasil dihapus!');
+                if (deleteRes.ok) {
+                    alert(`Naskah "${fileName}" berhasil dihapus permanen!`);
+                    if (document.getElementById('edit-filename').value === fileName) {
+                        resetFormToNew();
+                    }
                     fetchArticleList();
                 } else {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Gagal menghapus');
+                    const err = await deleteRes.json();
+                    throw new Error(err.message || `Gagal menghapus (HTTP ${deleteRes.status})`);
                 }
             } catch (err) {
                 alert('Gagal menghapus naskah: ' + err.message);
+                console.error(err);
             }
         }
     </script>
