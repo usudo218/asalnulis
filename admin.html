@@ -19,18 +19,18 @@
             <p class="text-xs text-slate-500 mt-1">usudo218.github.io/asalnulis</p>
         </div>
 
-        <form id="login-form" class="space-y-4">
+        <div class="space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password Admin</label>
-                <input type="password" id="admin-pass" required placeholder="Masukkan password admin (admin123)" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black focus:outline-none">
+                <input type="password" id="admin-pass" placeholder="Ketik: admin123" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black focus:outline-none" onkeydown="if(event.key === 'Enter') handleAdminLogin()">
             </div>
-            <div id="login-error" class="hidden text-xs text-rose-600 font-bold text-center">
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Password salah! Pastikan huruf kecil: <b>admin123</b>
+            <div id="login-error" class="hidden text-xs text-rose-600 font-bold text-center bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Password salah! Gunakan huruf kecil: <b>admin123</b>
             </div>
-            <button type="submit" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition">
+            <button type="button" onclick="handleAdminLogin()" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition">
                 Masuk ke Dashboard
             </button>
-        </form>
+        </div>
     </div>
 
     <div id="admin-dashboard" class="hidden w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6 my-8">
@@ -163,22 +163,16 @@
         const editIndicator = document.getElementById('edit-indicator');
         const btnText = document.getElementById('btn-text');
 
-        // Reset pesan error saat mengetik
-        passInput.addEventListener('input', () => {
-            loginError.classList.add('hidden');
-        });
-
-        document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
-
+        // Otomatis buka jika sudah pernah login di sesi browser ini
         if (sessionStorage.getItem('an_admin_logged') === 'true') {
             showDashboard();
         }
 
-        // Logic login aman dengan trim spasi
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const pass = passInput.value.trim();
-            if (pass === ADMIN_PASSCODE) {
+        // FUNGSI LOGIN LANGSUNG (ANTI-GAGAL)
+        function handleAdminLogin() {
+            const inputVal = passInput.value ? passInput.value.trim() : '';
+            
+            if (inputVal === ADMIN_PASSCODE) {
                 loginError.classList.add('hidden');
                 sessionStorage.setItem('an_admin_logged', 'true');
                 showDashboard();
@@ -187,11 +181,12 @@
                 passInput.value = '';
                 passInput.focus();
             }
-        });
+        }
 
         function showDashboard() {
             loginScreen.classList.add('hidden');
             adminDashboard.classList.remove('hidden');
+            document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('gh-token').value = localStorage.getItem('an_gh_token') || '';
             fetchArticleList();
         }
@@ -265,7 +260,7 @@
             
             const token = localStorage.getItem('an_gh_token');
             if (!token) {
-                alert('Silakan masukkan dan simpan GitHub Token Anda terlebih dahulu!');
+                alert('Silakan masukkan dan simpan GitHub Token Anda di form atas terlebih dahulu!');
                 fileInput.value = '';
                 return;
             }
@@ -434,7 +429,6 @@
             }
         }
 
-        // FUNGSI EDIT AMAN DARI MASALAH CORS
         async function editArticle(fileName, sha) {
             const token = localStorage.getItem('an_gh_token');
 
@@ -457,4 +451,17 @@
                 document.getElementById('edit-filename').value = fileName;
                 document.getElementById('edit-sha').value = sha;
                 document.getElementById('title').value = data.title || '';
-                document.getElementById('category').value = data.category ||
+                document.getElementById('category').value = data.category || 'ASAL NULIS';
+                document.getElementById('post-date').value = data.date ? data.date.split('T')[0] : new Date().toISOString().split('T')[0];
+                document.getElementById('readTime').value = data.readTime || '3 mnt';
+                document.getElementById('image-name').value = data.image || '';
+                document.getElementById('audio-name').value = data.audio || '';
+                document.getElementById('excerpt').value = data.excerpt || '';
+                document.getElementById('content').value = data.content || '';
+
+                editIndicator.classList.remove('hidden');
+                btnText.innerText = 'Simpan Perubahan Naskah';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                alert('Gagal membuka editor: ' + err.message);
+                console.error('Error Edit Article:', err
