@@ -142,7 +142,13 @@
                 const trimmed = p.trim();
                 if (!trimmed) return '';
                 
-                if (trimmed.startsWith('<img') || trimmed.startsWith('<blockquote') || trimmed.startsWith('<audio') || trimmed.startsWith('<div')) {
+                if (
+                    trimmed.startsWith('<img') || 
+                    trimmed.startsWith('<figure') || 
+                    trimmed.startsWith('<blockquote') || 
+                    trimmed.startsWith('<audio') || 
+                    trimmed.startsWith('<div')
+                ) {
                     return trimmed;
                 }
 
@@ -159,17 +165,21 @@
             const modals = document.getElementById('modals-container');
             const emptyState = document.getElementById('empty-state');
 
-            const repo = 'usudo218/blog';
+            const repo = 'usudo218/asalnulis';
             let allArticles = [];
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${repo}/contents/content?t=${Date.now()}`);
+                const response = await fetch(`https://api.github.com/repos/${repo}/contents/content?t=${Date.now()}`, {
+                    cache: 'no-store'
+                });
                 
                 if (response.ok) {
                     const files = await response.json();
                     for (let file of files) {
                         if (file.name.endsWith('.json')) {
-                            const resData = await fetch(`${file.download_url}?t=${Date.now()}`);
+                            const resData = await fetch(`${file.download_url}?t=${Date.now()}`, {
+                                cache: 'no-store'
+                            });
                             if (resData.ok) {
                                 const articleData = await resData.json();
                                 articleData.id = 'archive-' + file.name.replace('.json', '');
@@ -188,7 +198,6 @@
                     return;
                 }
 
-                // Urutkan berdasarkan tanggal postingan (terbaru di atas)
                 allArticles.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
                 const grouped = {
@@ -257,7 +266,12 @@
                                 <span class="text-xs text-slate-400"><i class="fa-regular fa-calendar-days mr-1"></i>${formattedDate}</span>
                             </div>
                             <h2 class="text-xl sm:text-2xl font-black mt-1 mb-3 text-slate-900">${art.title}</h2>
-                            ${art.image ? `<img src="${art.image}" class="w-full h-56 object-cover rounded-2xl mb-4 border border-slate-100" onerror="this.style.display='none'">` : ''}
+                            ${art.image ? `
+                                <figure class="mb-5 text-center">
+                                    <img src="${art.image}" class="w-full h-64 object-cover rounded-2xl border border-slate-100" onerror="this.style.display='none'">
+                                    ${art.imageCaption ? `<figcaption class="text-xs text-slate-500 italic mt-2">${art.imageCaption}</figcaption>` : ''}
+                                </figure>
+                            ` : ''}
                             ${art.audio ? `<audio controls class="w-full mb-4"><source src="${art.audio}"></audio>` : ''}
                             <div class="text-sm text-slate-700 leading-relaxed text-justify">${formattedContent}</div>
                         </div>
