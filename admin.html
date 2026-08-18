@@ -10,28 +10,42 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8 min-h-screen flex items-center justify-center">
 
-    <!-- MODAL LOGIN ADMIN -->
-    <div id="login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <!-- ================= MODAL LOGIN AUTENTIKASI ADMIN ================= -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 text-center space-y-5">
-            <div class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center font-black text-2xl mx-auto shadow-md">
+            <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center font-black text-2xl mx-auto shadow-md">
                 AN
             </div>
             <div>
-                <h2 class="text-xl font-bold text-slate-900">Autentikasi Admin</h2>
-                <p class="text-xs text-slate-500 mt-1">Masukkan GitHub Personal Access Token (PAT) Anda untuk mengelola konten web.</p>
+                <h2 class="text-xl font-bold text-slate-900">Akses Pengelola Admin</h2>
+                <p class="text-xs text-slate-500 mt-1">usudo218.github.io/asalnulis</p>
             </div>
-            <div class="space-y-3">
-                <input type="password" id="login-token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-black focus:outline-none text-center">
-                <button onclick="handleLogin()" id="btn-login" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-key"></i>
-                    <span>Masuk ke Dashboard</span>
+
+            <form id="auth-form" class="space-y-3.5 text-left" onsubmit="event.preventDefault(); handleLogin();">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">1. Password Admin</label>
+                    <input type="password" id="login-pass" required placeholder="Masukkan password admin" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-black focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">2. GitHub Personal Access Token (PAT)</label>
+                    <input type="password" id="login-token" required placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-mono focus:ring-2 focus:ring-black focus:outline-none">
+                </div>
+
+                <div id="login-error" class="hidden text-xs text-rose-600 font-bold text-center bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> <span id="login-error-text">Autentikasi gagal!</span>
+                </div>
+
+                <button type="submit" id="btn-login" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 mt-2">
+                    <i class="fa-solid fa-lock-open"></i>
+                    <span>Buka Dashboard Admin</span>
                 </button>
-            </div>
-            <p class="text-[10px] text-slate-400">Token disimpan di LocalStorage perangkat Anda dan tidak dikirim ke pihak ketiga.</p>
+            </form>
+            <p class="text-[10px] text-slate-400">Sesi diamankan di memori browser dan otomatis terhapus saat tab ditutup.</p>
         </div>
     </div>
 
-    <!-- MODAL SISIPKAN GAMBAR BESERTA CAPTION -->
+    <!-- ================= MODAL SISIPKAN GAMBAR BESERTA CAPTION ================= -->
     <div id="inline-img-modal" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white max-w-md w-full rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
@@ -65,8 +79,8 @@
         </div>
     </div>
 
-    <!-- DASHBOARD UTAMA -->
-    <div id="admin-dashboard" class="w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6 my-8">
+    <!-- ================= DASHBOARD UTAMA ================= -->
+    <div id="admin-dashboard" class="hidden w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6 my-8">
         <div class="flex items-center justify-between border-b pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 bg-black text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md">
@@ -74,38 +88,27 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-slate-900">Admin Panel Editor</h1>
-                    <p class="text-xs text-slate-500">Repository: <span id="repo-label" class="font-semibold text-slate-700">usudo218/asalnulis</span></p>
+                    <p class="text-xs text-slate-500">Repository: <span class="font-semibold text-slate-700">usudo218/asalnulis</span></p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
+                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
                     <i class="fa-solid fa-globe mr-1"></i> Beranda
                 </a>
-                <a href="daftar-isi.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
-                    <i class="fa-solid fa-list mr-1"></i> Arsip
+                <a href="daftar-isi.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-list mr-1"></i> Daftar Isi
                 </a>
-                <button onclick="handleLogout()" title="Keluar" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3 py-2 rounded-xl transition">
+                <button onclick="handleLogout()" title="Keluar dari Panel" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1">
                     <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Keluar</span>
                 </button>
             </div>
         </div>
 
-        <!-- Sesi Info -->
-        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-            <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="font-bold text-slate-700">Sesi Terhubung:</span>
-                <span id="token-preview" class="font-mono text-[11px] text-slate-500">ghp_••••••••••••••••</span>
-            </div>
-            <button onclick="changeTokenPrompt()" class="text-slate-600 hover:text-black font-semibold text-[11px] underline self-start sm:self-auto">
-                Ganti Token GitHub
-            </button>
-        </div>
-
-        <!-- Mode Edit Info -->
+        <!-- Indikator Mode Edit -->
         <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
-            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah <b id="editing-title-label"></b></span>
-            <button type="button" onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Baru)</button>
+            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Sedang Mengubah Naskah: <b id="editing-title-label"></b></span>
+            <button type="button" onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Naskah Baru)</button>
         </div>
 
         <form id="article-form" class="space-y-4">
@@ -136,13 +139,12 @@
                 </div>
             </div>
 
-            <!-- Bagian Gambar Sampul & Audio -->
+            <!-- Upload Media Sampul & Backsound -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Gambar Sampul Utama</label>
                     <input type="file" id="image-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
                     <input type="text" id="image-name" placeholder="Atau URL/Path gambar sampul" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
-                    <!-- INPUT CAPTION SAMPUL UTAMA -->
                     <input type="text" id="image-caption" placeholder="Caption / Keterangan gambar sampul (opsional)" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs">
                 </div>
 
@@ -162,7 +164,6 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <label class="block text-xs font-bold text-slate-700 uppercase">Isi Naskah Lengkap</label>
                     
-                    <!-- Tombol Pemicu Modal Sisipkan Gambar -->
                     <button type="button" onclick="openInlineImgModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl text-[11px] font-bold text-slate-800 flex items-center gap-1 transition">
                         <i class="fa-solid fa-image text-blue-600"></i>
                         <span>Sisipkan Gambar + Caption ke Teks</span>
@@ -194,6 +195,7 @@
     </div>
 
     <script>
+        const ADMIN_PASSCODE = "admin123";
         const REPO = "usudo218/asalnulis";
         const BRANCH = "main";
 
@@ -202,67 +204,82 @@
         const btnText = document.getElementById('btn-text');
         const loginModal = document.getElementById('login-modal');
         const inlineImgModal = document.getElementById('inline-img-modal');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const loginError = document.getElementById('login-error');
+        const loginErrorText = document.getElementById('login-error-text');
 
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
 
-        // --- AUTHENTICATION ---
+        // --- AUTHENTICATION & LOGIN ---
         function checkAuth() {
-            const token = localStorage.getItem('an_gh_token');
-            if (!token) {
-                loginModal.classList.remove('hidden');
-            } else {
+            const token = sessionStorage.getItem('an_gh_token');
+            const passOk = sessionStorage.getItem('an_admin_auth');
+
+            if (token && passOk === 'true') {
                 loginModal.classList.add('hidden');
-                document.getElementById('token-preview').innerText = token.substring(0, 6) + '••••••••••••••••' + token.slice(-4);
+                adminDashboard.classList.remove('hidden');
                 fetchArticleList();
+            } else {
+                loginModal.classList.remove('hidden');
+                adminDashboard.classList.add('hidden');
+                // Mengambil token yang sebelumnya tersimpan (jika ada)
+                document.getElementById('login-token').value = localStorage.getItem('an_gh_token_saved') || '';
             }
         }
 
         async function handleLogin() {
-            const tokenInput = document.getElementById('login-token-input');
-            const token = tokenInput.value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const token = document.getElementById('login-token').value.trim();
             const btn = document.getElementById('btn-login');
 
+            if (pass !== ADMIN_PASSCODE) {
+                loginErrorText.innerText = "Password admin salah!";
+                loginError.classList.remove('hidden');
+                return;
+            }
+
             if (!token) {
-                alert('Silakan masukkan GitHub PAT Token Anda!');
+                loginErrorText.innerText = "GitHub PAT Token tidak boleh kosong!";
+                loginError.classList.remove('hidden');
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi Kunci...';
+            loginError.classList.add('hidden');
 
             try {
+                // Verifikasi validitas token langsung ke GitHub API
                 const res = await fetch('https://api.github.com/user', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 if (res.ok) {
-                    localStorage.setItem('an_gh_token', token);
-                    tokenInput.value = '';
+                    sessionStorage.setItem('an_gh_token', token);
+                    sessionStorage.setItem('an_admin_auth', 'true');
+                    localStorage.setItem('an_gh_token_saved', token); // Menyimpan token untuk kenyamanan sesi berikutnya
+                    
                     loginModal.classList.add('hidden');
-                    checkAuth();
+                    adminDashboard.classList.remove('hidden');
+                    fetchArticleList();
                 } else {
-                    alert('Token tidak valid atau tidak memiliki izin akses.');
+                    loginErrorText.innerText = "Token GitHub tidak valid atau tidak memiliki izin (scope 'repo').";
+                    loginError.classList.remove('hidden');
                 }
             } catch (err) {
-                alert('Gagal memverifikasi token: ' + err.message);
+                loginErrorText.innerText = "Gagal verifikasi: " + err.message;
+                loginError.classList.remove('hidden');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-key"></i> <span>Masuk ke Dashboard</span>';
+                btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span>Buka Dashboard Admin</span>';
             }
         }
 
         function handleLogout() {
-            if (confirm('Yakin ingin keluar dan menghapus token dari browser ini?')) {
-                localStorage.removeItem('an_gh_token');
-                checkAuth();
-            }
-        }
-
-        function changeTokenPrompt() {
-            const newToken = prompt('Masukkan GitHub Personal Access Token (PAT) baru:');
-            if (newToken && newToken.trim() !== '') {
-                localStorage.setItem('an_gh_token', newToken.trim());
-                checkAuth();
+            if (confirm('Yakin ingin keluar dari sesi admin?')) {
+                sessionStorage.removeItem('an_gh_token');
+                sessionStorage.removeItem('an_admin_auth');
+                location.reload();
             }
         }
 
@@ -332,7 +349,7 @@
             return path;
         }
 
-        // --- MODAL GAMBAR SISIPAN & CAPTION ---
+        // --- MODAL SISIPKAN GAMBAR & CAPTION ---
         function openInlineImgModal() {
             document.getElementById('modal-inline-file').value = '';
             document.getElementById('modal-inline-url').value = '';
@@ -345,7 +362,7 @@
         }
 
         async function processInsertInlineImage() {
-            const token = localStorage.getItem('an_gh_token');
+            const token = sessionStorage.getItem('an_gh_token');
             if (!token) {
                 checkAuth();
                 return;
@@ -371,7 +388,6 @@
                     imgUrl = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${uploadedPath}`;
                 }
 
-                // Bangun template figure + figcaption
                 let template = '';
                 if (captionInput) {
                     template = `\n\n<figure class="my-5 text-center">\n  <img src="${imgUrl}" alt="${captionInput}" class="w-full rounded-2xl object-cover border border-slate-200">\n  <figcaption class="text-xs text-slate-500 italic mt-2">${captionInput}</figcaption>\n</figure>\n\n`;
@@ -394,10 +410,10 @@
             }
         }
 
-        // --- SUBMIT ARTICLE ---
+        // --- SIMPAN / UPDATE ARTIKEL ---
         articleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const token = localStorage.getItem('an_gh_token');
+            const token = sessionStorage.getItem('an_gh_token');
             const statusDiv = document.getElementById('status');
             const submitBtn = document.getElementById('submit-btn');
 
@@ -442,7 +458,6 @@
 
                 const fileName = editFileName ? editFileName : `article-${Date.now()}.json`;
                 
-                // Menyimpan imageCaption ke file JSON
                 const fileData = {
                     title, category, date, readTime,
                     image: imagePath,
@@ -502,10 +517,10 @@
             }
         });
 
-        // --- FETCH LIST ---
+        // --- FETCH DAFTAR ARTIKEL ---
         async function fetchArticleList() {
             const listContainer = document.getElementById('article-list-container');
-            const token = localStorage.getItem('an_gh_token');
+            const token = sessionStorage.getItem('an_gh_token');
 
             if (!token) return;
 
@@ -566,9 +581,9 @@
             }
         }
 
-        // --- EDIT ARTICLE ---
+        // --- EDIT ARTIKEL ---
         async function editArticle(fileName, sha, downloadUrl) {
-            const token = localStorage.getItem('an_gh_token');
+            const token = sessionStorage.getItem('an_gh_token');
             let data = null;
             let currentSha = sha;
 
@@ -597,7 +612,6 @@
 
                 if (!data) throw new Error('Data artikel tidak dapat dibaca.');
 
-                // Isi Form
                 document.getElementById('edit-filename').value = fileName;
                 document.getElementById('edit-sha').value = currentSha;
                 document.getElementById('title').value = data.title || '';
@@ -631,9 +645,9 @@
             btnText.innerText = 'Terbitkan Naskah Ke GitHub';
         }
 
-        // --- DELETE ARTICLE ---
+        // --- HAPUS ARTIKEL ---
         async function deleteArticle(fileName) {
-            const token = localStorage.getItem('an_gh_token');
+            const token = sessionStorage.getItem('an_gh_token');
 
             if (!token) {
                 checkAuth();
