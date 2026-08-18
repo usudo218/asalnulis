@@ -22,10 +22,10 @@
         <form id="login-form" class="space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password Admin</label>
-                <input type="password" id="admin-pass" required placeholder="Masukkan password admin" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black focus:outline-none">
+                <input type="password" id="admin-pass" required placeholder="Masukkan password admin (admin123)" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black focus:outline-none">
             </div>
             <div id="login-error" class="hidden text-xs text-rose-600 font-bold text-center">
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Password yang Anda masukkan salah!
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Password salah! Pastikan huruf kecil: <b>admin123</b>
             </div>
             <button type="submit" class="w-full py-3 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition">
                 Masuk ke Dashboard
@@ -58,7 +58,7 @@
                 <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
                 <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan Token</button>
             </div>
-            <p class="text-[10px] text-slate-400">*Token tersimpan aman di browser Anda untuk sinkronisasi ke repo: <b>usudo218/asalnulis</b></p>
+            <p class="text-[10px] text-slate-400">*Token tersimpan di browser Anda untuk sinkronisasi repositori <b>usudo218/asalnulis</b></p>
         </div>
 
         <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
@@ -152,15 +152,21 @@
 
     <script>
         const ADMIN_PASSCODE = "admin123";
-        const REPO = "usudo218/asalnulis"; // Repositori Target Sesuai Domain GitHub Pages
+        const REPO = "usudo218/asalnulis";
         const BRANCH = "main";
 
         const loginScreen = document.getElementById('login-screen');
         const adminDashboard = document.getElementById('admin-dashboard');
         const loginError = document.getElementById('login-error');
+        const passInput = document.getElementById('admin-pass');
         const articleForm = document.getElementById('article-form');
         const editIndicator = document.getElementById('edit-indicator');
         const btnText = document.getElementById('btn-text');
+
+        // Reset pesan error saat mengetik
+        passInput.addEventListener('input', () => {
+            loginError.classList.add('hidden');
+        });
 
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
 
@@ -168,14 +174,18 @@
             showDashboard();
         }
 
+        // Logic login aman dengan trim spasi
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const pass = document.getElementById('admin-pass').value;
+            const pass = passInput.value.trim();
             if (pass === ADMIN_PASSCODE) {
+                loginError.classList.add('hidden');
                 sessionStorage.setItem('an_admin_logged', 'true');
                 showDashboard();
             } else {
                 loginError.classList.remove('hidden');
+                passInput.value = '';
+                passInput.focus();
             }
         });
 
@@ -364,7 +374,7 @@
                     resetFormToNew();
                     fetchArticleList();
                 } else {
-                    throw new Error(`${result.message \vert{}\vert{} 'Gagal menyimpan naskah'} (HTTP${response.status})`);
+                    throw new Error(`${result.message || 'Gagal menyimpan naskah'} (HTTP ${response.status})`);
                 }
             } catch (err) {
                 statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
@@ -372,4 +382,79 @@
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>${document.getElementById('edit-filename').value ? 'Simpan Perubahan Naskah'
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>${document.getElementById('edit-filename').value ? 'Simpan Perubahan Naskah' : 'Terbitkan Naskah Ke GitHub'}</span>`;
+            }
+        });
+
+        async function fetchArticleList() {
+            const listContainer = document.getElementById('article-list-container');
+            const token = localStorage.getItem('an_gh_token');
+
+            try {
+                const headers = { 'Accept': 'application/vnd.github+json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content?t=${Date.now()}`, { headers });
+                
+                if (!res.ok) {
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada folder 'content/' di repo '${REPO}' atau token belum disetel.</p>`;
+                    return;
+                }
+
+                const files = await res.json();
+                const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+
+                if (jsonFiles.length === 0) {
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada naskah yang diterbitkan di repositori ini.</p>`;
+                    return;
+                }
+
+                listContainer.innerHTML = '';
+
+                for (let file of jsonFiles) {
+                    listContainer.innerHTML += `
+                        <div class="bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs">
+                            <div class="truncate">
+                                <span class="font-bold text-slate-900 block truncate">${file.name}</span>
+                                <span class="text-[10px] text-slate-400">${file.path}</span>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="editArticle('${file.name}', '${file.sha}')" class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </button>
+                                <button onclick="deleteArticle('${file.name}', '${file.sha}')" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                listContainer.innerHTML = `<p class="text-xs text-rose-500 italic text-center py-4">Gagal memuat list: ${err.message}</p>`;
+            }
+        }
+
+        // FUNGSI EDIT AMAN DARI MASALAH CORS
+        async function editArticle(fileName, sha) {
+            const token = localStorage.getItem('an_gh_token');
+
+            try {
+                const headers = { 'Accept': 'application/vnd.github+json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content/${fileName}?t=${Date.now()}`, { headers });
+                
+                if (!res.ok) {
+                    throw new Error(`Gagal mengambil detail naskah (HTTP ${res.status})`);
+                }
+
+                const fileObj = await res.json();
+                
+                const cleanBase64 = fileObj.content.replace(/\s/g, '');
+                const jsonString = decodeURIComponent(escape(window.atob(cleanBase64)));
+                const data = JSON.parse(jsonString);
+
+                document.getElementById('edit-filename').value = fileName;
+                document.getElementById('edit-sha').value = sha;
+                document.getElementById('title').value = data.title || '';
+                document.getElementById('category').value = data.category ||
