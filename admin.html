@@ -10,7 +10,6 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8 min-h-screen flex items-center justify-center">
 
-    <!-- ================= LAYAR LOGIN ADMIN ================= -->
     <div id="login-screen" class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200">
         <div class="text-center mb-6">
             <div class="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-3 shadow-md">
@@ -34,9 +33,7 @@
         </form>
     </div>
 
-    <!-- ================= DASHBOARD ADMIN (TERSEMBUNYI) ================= -->
     <div id="admin-dashboard" class="hidden w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200">
-        <!-- Header -->
         <div class="flex items-center justify-between border-b pb-4 mb-6">
             <div>
                 <h1 class="text-xl font-bold text-slate-900">Admin Panel Editor</h1>
@@ -47,17 +44,15 @@
             </button>
         </div>
 
-        <!-- Form Token GitHub -->
         <div class="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Personal Access Token</label>
             <div class="flex gap-2">
                 <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
                 <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan</button>
             </div>
-            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di browser Anda.</p>
+            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di Local Storage browser Anda.</p>
         </div>
 
-        <!-- Form Tambah Artikel -->
         <form id="article-form" class="space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Judul Tulisan / Naskah</label>
@@ -100,23 +95,22 @@
                 <textarea id="content" rows="6" required placeholder="Tuliskan isi naskah tulisan secara lengkap..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
             </div>
 
-            <button type="submit" id="submit-btn" class="w-full py-3.5 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg transition">
-                <i class="fa-solid fa-paper-plane mr-1"></i> Terbitkan Artikel Instan Ke GitHub
+            <button type="submit" id="submit-btn" class="w-full py-3.5 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> <span>Terbitkan Artikel Instan Ke GitHub</span>
             </button>
         </form>
 
-        <!-- Status Result -->
         <div id="status" class="hidden mt-4 p-4 rounded-xl text-xs text-center font-bold"></div>
     </div>
 
     <script>
-        // PASSCODE ADMIN SAMA SEPERTI STSMAN1MUNCAR
         const ADMIN_PASSCODE = "admin123";
 
         const loginScreen = document.getElementById('login-screen');
         const adminDashboard = document.getElementById('admin-dashboard');
         const loginError = document.getElementById('login-error');
 
+        // Cek login status
         if (sessionStorage.getItem('an_admin_logged') === 'true') {
             showDashboard();
         }
@@ -145,11 +139,15 @@
 
         function saveToken() {
             const token = document.getElementById('gh-token').value.trim();
+            if (!token) {
+                alert('Token tidak boleh kosong!');
+                return;
+            }
             localStorage.setItem('an_gh_token', token);
             alert('Token berhasil disimpan!');
         }
 
-        // METODE SIMPAN INSTAN DENGAN FILE BARU DI FOLDER content/ (ADOP STSMAN1MUNCAR)
+        // Handle Submit Artikel ke GitHub
         document.getElementById('article-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('an_gh_token');
@@ -162,26 +160,31 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerText = 'Mengirim ke GitHub...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengirim ke GitHub...</span>';
             statusDiv.classList.add('hidden');
 
-            const title = document.getElementById('title').value;
+            const title = document.getElementById('title').value.trim();
             const category = document.getElementById('category').value;
-            const readTime = document.getElementById('readTime').value;
-            const image = document.getElementById('image-name').value;
-            const audio = document.getElementById('audio-name').value;
-            const excerpt = document.getElementById('excerpt').value;
-            const content = document.getElementById('content').value;
+            const readTime = document.getElementById('readTime').value.trim();
+            const image = document.getElementById('image-name').value.trim();
+            const audio = document.getElementById('audio-name').value.trim();
+            const excerpt = document.getElementById('excerpt').value.trim();
+            const content = document.getElementById('content').value.trim();
 
-            // MEMBUAT FILE UNIQUE TIMESTAMP TERPISAH
             const fileName = `article-${Date.now()}.json`;
             const fileData = {
-                title, category, readTime, image, audio,
-                excerpt, content,
+                title,
+                category,
+                readTime,
+                image,
+                audio,
+                excerpt,
+                content,
                 date: new Date().toISOString()
             };
 
-            const repo = 'usudo218/blog'; // SESUAIKAN DENGAN REPO
+            const repo = 'usudo218/blog'; // Repositori target
+            const branch = 'main';         // Ganti ke 'master' jika repositori menggunakan branch master
             const path = `content/${fileName}`;
             const url = `https://api.github.com/repos/${repo}/contents/${path}`;
 
@@ -189,30 +192,33 @@
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${token}`,
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         message: `Tambah artikel: ${title}`,
                         content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
-                        branch: 'main'
+                        branch: branch
                     })
                 });
 
+                const result = await response.json();
+
                 if (response.ok) {
                     statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
-                    statusDiv.innerText = 'BERHASIL! Artikel baru telah diterbitkan ke GitHub.';
+                    statusDiv.innerText = `BERHASIL! Artikel "${title}" telah berhasil diterbitkan ke GitHub.`;
                     document.getElementById('article-form').reset();
                 } else {
-                    const err = await response.json();
-                    throw new Error(err.message || 'Gagal menyimpan');
+                    throw new Error(`${result.message || 'Gagal mengirim data'} (HTTP ${response.status})`);
                 }
             } catch (err) {
                 statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
-                statusDiv.innerText = 'GAGAL: ' + err.message + ' (Pastikan token benar dan memiliki akses repo)';
+                statusDiv.innerText = 'GAGAL: ' + err.message;
+                console.error('Detail Error:', err);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Terbitkan Artikel Instan Ke GitHub';
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Terbitkan Artikel Instan Ke GitHub</span>';
             }
         });
     </script>
