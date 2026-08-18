@@ -55,14 +55,14 @@
         <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Personal Access Token</label>
             <div class="flex gap-2">
-                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
+                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
                 <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan</button>
             </div>
-            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di browser Anda.</p>
+            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di browser Anda untuk keperluan unggah langsung ke GitHub.</p>
         </div>
 
         <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
-            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah artikel.</span>
+            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Sedang dalam Mode Edit Naskah.</span>
             <button onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Baru)</button>
         </div>
 
@@ -77,7 +77,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Topik Kategori</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Topik Tulisan</label>
                     <select id="category" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-medium">
                         <option value="ASAL NULIS">ASAL NULIS</option>
                         <option value="FIKSIANA">FIKSIANA</option>
@@ -96,21 +96,21 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Gambar Sampul</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Upload Gambar Sampul</label>
                     <input type="file" id="image-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
-                    <input type="text" id="image-name" placeholder="Atau path: images/tulisan.webp" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                    <input type="text" id="image-name" placeholder="Atau ketik path: images/tulisan-1.webp" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-slate-700 uppercase">Audio Backsound</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Upload Audio Backsound</label>
                     <input type="file" id="audio-file" accept="audio/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
-                    <input type="text" id="audio-name" placeholder="Atau path: audio/backsound.mp3" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                    <input type="text" id="audio-name" placeholder="Atau ketik path: audio/backsound-1.mp3" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan / Excerpt</label>
-                <textarea id="excerpt" rows="2" required placeholder="Tuliskan ringkasan singkat..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+                <textarea id="excerpt" rows="2" required placeholder="Tuliskan 1-2 kalimat ringkasan artikel..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
             </div>
 
             <div>
@@ -119,7 +119,7 @@
             </div>
 
             <button type="submit" id="submit-btn" class="w-full py-3.5 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> <span id="btn-text">Terbitkan Artikel Ke GitHub</span>
+                <i class="fa-solid fa-paper-plane"></i> <span id="btn-text">Terbitkan Naskah Ke GitHub</span>
             </button>
         </form>
 
@@ -127,7 +127,7 @@
 
         <div class="border-t pt-6 space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Kelola Daftar Tulisan Diterbitkan</h2>
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Kelola Daftar Naskah Diterbitkan</h2>
                 <button onclick="fetchArticleList()" class="text-xs text-slate-600 hover:text-black font-semibold flex items-center gap-1">
                     <i class="fa-solid fa-rotate-right"></i> Refresh List
                 </button>
@@ -151,6 +151,7 @@
         const editIndicator = document.getElementById('edit-indicator');
         const btnText = document.getElementById('btn-text');
 
+        // Atur tanggal hari ini secara default
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
 
         if (sessionStorage.getItem('an_admin_logged') === 'true') {
@@ -187,10 +188,11 @@
                 return;
             }
             localStorage.setItem('an_gh_token', token);
-            alert('Token berhasil disimpan!');
+            alert('Token GitHub berhasil disimpan!');
             fetchArticleList();
         }
 
+        // Helper Konversi File ke Base64
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -200,9 +202,10 @@
             });
         }
 
+        // Fungsi Upload Media Otomatis ke GitHub
         async function uploadMediaFile(file, folder, token) {
             const ext = file.name.split('.').pop();
-            const cleanName = `${folder.slice(0, -1)}-${Date.now()}.${ext}`;
+            const cleanName = `media-${Date.now()}.${ext}`;
             const path = `${folder}${cleanName}`;
             const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
             const contentBase64 = await fileToBase64(file);
@@ -229,6 +232,7 @@
             return path;
         }
 
+        // Submit Form (Tambah Baru / Update)
         articleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('an_gh_token');
@@ -241,7 +245,7 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses & Mengirim ke GitHub...</span>';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses ke GitHub...</span>';
             statusDiv.classList.add('hidden');
 
             try {
@@ -251,11 +255,13 @@
                 const imgFileInput = document.getElementById('image-file');
                 const audFileInput = document.getElementById('audio-file');
 
+                // Unggah gambar jika file dipilih
                 if (imgFileInput.files.length > 0) {
                     imagePath = await uploadMediaFile(imgFileInput.files[0], 'images/', token);
                     document.getElementById('image-name').value = imagePath;
                 }
 
+                // Unggah audio jika file dipilih
                 if (audFileInput.files.length > 0) {
                     audioPath = await uploadMediaFile(audFileInput.files[0], 'audio/', token);
                     document.getElementById('audio-name').value = audioPath;
@@ -287,7 +293,7 @@
                 const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
 
                 const payload = {
-                    message: editFileName ? `Update artikel: ${title}` : `Tambah artikel: ${title}`,
+                    message: editFileName ? `Update naskah: ${title}` : `Tambah naskah: ${title}`,
                     content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
                     branch: BRANCH
                 };
@@ -310,11 +316,11 @@
 
                 if (response.ok) {
                     statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
-                    statusDiv.innerText = editFileName ? `BERHASIL! Artikel "${title}" telah diperbarui.` : `BERHASIL! Artikel "${title}" telah diterbitkan.`;
+                    statusDiv.innerText = editFileName ? `BERHASIL! Naskah "${title}" telah diperbarui.` : `BERHASIL! Naskah "${title}" telah diterbitkan.`;
                     resetFormToNew();
                     fetchArticleList();
                 } else {
-                    throw new Error(`${result.message || 'Gagal menyimpan artikel'} (HTTP ${response.status})`);
+                    throw new Error(`${result.message || 'Gagal menyimpan naskah'} (HTTP ${response.status})`);
                 }
             } catch (err) {
                 statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
@@ -322,10 +328,11 @@
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>${document.getElementById('edit-filename').value ? 'Simpan Perubahan Artikel' : 'Terbitkan Artikel Ke GitHub'}</span>`;
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>${document.getElementById('edit-filename').value ? 'Simpan Perubahan Naskah' : 'Terbitkan Naskah Ke GitHub'}</span>`;
             }
         });
 
+        // Ambil Daftar Artikel Diterbitkan
         async function fetchArticleList() {
             const listContainer = document.getElementById('article-list-container');
             const token = localStorage.getItem('an_gh_token');
@@ -345,7 +352,7 @@
                 const jsonFiles = files.filter(f => f.name.endsWith('.json'));
 
                 if (jsonFiles.length === 0) {
-                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada artikel diterbitkan.</p>`;
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada artikel yang diterbitkan.</p>`;
                     return;
                 }
 
@@ -374,10 +381,11 @@
             }
         }
 
+        // Buka Editor untuk Edit Artikel
         async function editArticle(fileName, sha, downloadUrl) {
             try {
                 const res = await fetch(`${downloadUrl}?t=${Date.now()}`);
-                if (!res.ok) throw new Error('Gagal mengambil detail artikel');
+                if (!res.ok) throw new Error('Gagal mengambil detail naskah');
                 const data = await res.json();
 
                 document.getElementById('edit-filename').value = fileName;
@@ -392,30 +400,32 @@
                 document.getElementById('content').value = data.content || '';
 
                 editIndicator.classList.remove('hidden');
-                btnText.innerText = 'Simpan Perubahan Artikel';
+                btnText.innerText = 'Simpan Perubahan Naskah';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 alert('Gagal membuka editor: ' + err.message);
             }
         }
 
+        // Reset ke Mode Buat Baru
         function resetFormToNew() {
             articleForm.reset();
             document.getElementById('edit-filename').value = '';
             document.getElementById('edit-sha').value = '';
             document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
             editIndicator.classList.add('hidden');
-            btnText.innerText = 'Terbitkan Artikel Ke GitHub';
+            btnText.innerText = 'Terbitkan Naskah Ke GitHub';
         }
 
+        // Hapus Artikel dari GitHub
         async function deleteArticle(fileName, sha) {
             const token = localStorage.getItem('an_gh_token');
             if (!token) {
-                alert('Token diperlukan untuk menghapus artikel!');
+                alert('Token diperlukan untuk menghapus naskah!');
                 return;
             }
 
-            if (!confirm(`Yakin ingin menghapus file "${fileName}" secara permanen dari GitHub?`)) {
+            if (!confirm(`Yakin ingin menghapus naskah "${fileName}" secara permanen dari GitHub?`)) {
                 return;
             }
 
@@ -430,21 +440,21 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: `Hapus artikel: ${fileName}`,
+                        message: `Hapus naskah: ${fileName}`,
                         sha: sha,
                         branch: BRANCH
                     })
                 });
 
                 if (res.ok) {
-                    alert('Artikel berhasil dihapus!');
+                    alert('Naskah berhasil dihapus!');
                     fetchArticleList();
                 } else {
                     const err = await res.json();
                     throw new Error(err.message || 'Gagal menghapus');
                 }
             } catch (err) {
-                alert('Gagal menghapus artikel: ' + err.message);
+                alert('Gagal menghapus naskah: ' + err.message);
             }
         }
     </script>
