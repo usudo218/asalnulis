@@ -137,11 +137,9 @@
         const editIndicator = document.getElementById('edit-indicator');
         const btnText = document.getElementById('btn-text');
 
-        // Set tanggal default hari ini
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
         document.getElementById('gh-token').value = localStorage.getItem('an_gh_token') || '';
 
-        // Otomatis muat daftar artikel saat halaman dibuka
         window.addEventListener('DOMContentLoaded', () => {
             fetchArticleList();
         });
@@ -157,7 +155,7 @@
             fetchArticleList();
         }
 
-        // Helper Base64 Binary untuk File Media
+        // Helper Base64 Binary untuk Media
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -174,7 +172,7 @@
             });
         }
 
-        // Helper Dekoder UTF-8 Anti Crash
+        // Helper Base64 to UTF-8 (ANTI ERROR URI MALFORMED)
         function b64ToUtf8(str) {
             const binaryString = window.atob(str);
             const bytes = new Uint8Array(binaryString.length);
@@ -184,7 +182,7 @@
             return new TextDecoder('utf-8').decode(bytes);
         }
 
-        // Helper Encoder UTF-8 to Base64
+        // Helper UTF-8 to Base64 (Untuk JSON File)
         function utf8ToB64(str) {
             const bytes = new TextEncoder().encode(str);
             let binary = '';
@@ -224,7 +222,6 @@
 
         async function uploadAndInsertImage(fileInput) {
             if (!fileInput.files || fileInput.files.length === 0) return;
-            
             const token = localStorage.getItem('an_gh_token');
             if (!token) {
                 alert('Silakan masukkan dan simpan GitHub Token Anda di form atas terlebih dahulu!');
@@ -392,7 +389,7 @@
                         </div>
                     `;
 
-                    // Event listener aman tanpa resiko string escaping
+                    // Event listener aman tanpa petik string escaping
                     itemDiv.querySelector('.btn-edit').addEventListener('click', () => {
                         editArticle(file.name, file.sha, file.download_url);
                     });
@@ -408,7 +405,7 @@
             }
         }
 
-        // FUNGSI EDIT DENGAN GITHUB API + FALLBACK DOWNLOAD URL
+        // FUNGSI EDIT GANDA (CONTENTS API + DIRECT FALLBACK)
         async function editArticle(fileName, sha, downloadUrl) {
             const token = localStorage.getItem('an_gh_token');
             let data = null;
@@ -417,7 +414,7 @@
                 const headers = { 'Accept': 'application/vnd.github+json' };
                 if (token) headers['Authorization'] = `Bearer ${token}`;
 
-                // 1. Coba ambil dari Contents API
+                // 1. Coba ambil lewat Contents API
                 const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content/${fileName}?t=${Date.now()}`, { headers });
                 
                 if (res.ok) {
@@ -439,7 +436,7 @@
 
                 if (!data) throw new Error('Data artikel tidak dapat dibaca dari GitHub.');
 
-                // Isi data ke Form Editor
+                // Isi Form
                 document.getElementById('edit-filename').value = fileName;
                 document.getElementById('edit-sha').value = sha;
                 document.getElementById('title').value = data.title || '';
@@ -456,7 +453,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 alert('Gagal membuka editor naskah: ' + err.message);
-                console.error('Error Edit:', err);
+                console.error('Detail Error Edit:', err);
             }
         }
 
