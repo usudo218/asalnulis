@@ -42,7 +42,7 @@
 
         <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
             <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah artikel yang ada.</span>
-            <button onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Naskah Baru)</button>
+            <button type="button" onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Naskah Baru)</button>
         </div>
 
         <form id="article-form" class="space-y-4">
@@ -157,6 +157,7 @@
             fetchArticleList();
         }
 
+        // Helper Base64 Binary untuk File Media
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -171,6 +172,26 @@
                 };
                 reader.onerror = error => reject(error);
             });
+        }
+
+        // Helper Dekoder UTF-8 Anti Crash
+        function b64ToUtf8(str) {
+            const binaryString = window.atob(str);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        // Helper Encoder UTF-8 to Base64
+        function utf8ToB64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
         }
 
         async function uploadMediaFile(file, folder, token) {
@@ -197,11 +218,7 @@
             });
 
             const result = await res.json();
-
-            if (!res.ok) {
-                throw new Error(result.message || `Gagal upload media (Status: ${res.status})`);
-            }
-
+            if (!res.ok) throw new Error(result.message || `Gagal upload media (Status: ${res.status})`);
             return path;
         }
 
@@ -295,7 +312,7 @@
 
                 const payload = {
                     message: editFileName ? `Update naskah: ${title}` : `Tambah naskah: ${title}`,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
+                    content: utf8ToB64(JSON.stringify(fileData, null, 2)),
                     branch: BRANCH
                 };
 
@@ -356,48 +373,73 @@
 
                 listContainer.innerHTML = '';
 
-                for (let file of jsonFiles) {
-                    listContainer.innerHTML += `
-                        <div class="bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs">
-                            <div class="truncate">
-                                <span class="font-bold text-slate-900 block truncate">${file.name}</span>
-                                <span class="text-[10px] text-slate-400">${file.path}</span>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <button onclick="editArticle('${file.name}', '${file.sha}')" class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition flex items-center gap-1">
-                                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                                </button>
-                                <button onclick="deleteArticle('${file.name}', '${file.sha}')" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition flex items-center gap-1">
-                                    <i class="fa-solid fa-trash"></i> Hapus
-                                </button>
-                            </div>
+                jsonFiles.forEach(file => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs';
+                    
+                    itemDiv.innerHTML = `
+                        <div class="truncate">
+                            <span class="font-bold text-slate-900 block truncate">${file.name}</span>
+                            <span class="text-[10px] text-slate-400">${file.path}</span>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" class="btn-edit px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition flex items-center gap-1">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            <button type="button" class="btn-delete px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition flex items-center gap-1">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
                         </div>
                     `;
-                }
+
+                    // Event listener aman tanpa resiko string escaping
+                    itemDiv.querySelector('.btn-edit').addEventListener('click', () => {
+                        editArticle(file.name, file.sha, file.download_url);
+                    });
+
+                    itemDiv.querySelector('.btn-delete').addEventListener('click', () => {
+                        deleteArticle(file.name, file.sha);
+                    });
+
+                    listContainer.appendChild(itemDiv);
+                });
             } catch (err) {
                 listContainer.innerHTML = `<p class="text-xs text-rose-500 italic text-center py-4">Gagal memuat list: ${err.message}</p>`;
             }
         }
 
-        async function editArticle(fileName, sha) {
+        // FUNGSI EDIT DENGAN GITHUB API + FALLBACK DOWNLOAD URL
+        async function editArticle(fileName, sha, downloadUrl) {
             const token = localStorage.getItem('an_gh_token');
+            let data = null;
 
             try {
                 const headers = { 'Accept': 'application/vnd.github+json' };
                 if (token) headers['Authorization'] = `Bearer ${token}`;
 
+                // 1. Coba ambil dari Contents API
                 const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content/${fileName}?t=${Date.now()}`, { headers });
                 
-                if (!res.ok) {
-                    throw new Error(`Gagal mengambil detail naskah (HTTP ${res.status})`);
+                if (res.ok) {
+                    const fileObj = await res.json();
+                    if (fileObj.content) {
+                        const cleanBase64 = fileObj.content.replace(/\s/g, '');
+                        const jsonString = b64ToUtf8(cleanBase64);
+                        data = JSON.parse(jsonString);
+                    }
                 }
 
-                const fileObj = await res.json();
-                
-                const cleanBase64 = fileObj.content.replace(/\s/g, '');
-                const jsonString = decodeURIComponent(escape(window.atob(cleanBase64)));
-                const data = JSON.parse(jsonString);
+                // 2. Jika payload kosong, ambil via direct download url
+                if (!data && downloadUrl) {
+                    const dlRes = await fetch(`${downloadUrl}?t=${Date.now()}`);
+                    if (dlRes.ok) {
+                        data = await dlRes.json();
+                    }
+                }
 
+                if (!data) throw new Error('Data artikel tidak dapat dibaca dari GitHub.');
+
+                // Isi data ke Form Editor
                 document.getElementById('edit-filename').value = fileName;
                 document.getElementById('edit-sha').value = sha;
                 document.getElementById('title').value = data.title || '';
@@ -413,8 +455,8 @@
                 btnText.innerText = 'Simpan Perubahan Naskah';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
-                alert('Gagal membuka editor: ' + err.message);
-                console.error('Error Edit Article:', err);
+                alert('Gagal membuka editor naskah: ' + err.message);
+                console.error('Error Edit:', err);
             }
         }
 
