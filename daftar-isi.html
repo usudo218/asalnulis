@@ -137,11 +137,15 @@
 
         function formatParagraphs(text) {
             if (!text) return '';
-            if (text.includes('<p>') || text.includes('<blockquote')) return text;
 
             return text.split(/\n\s*\n/).map(p => {
                 const trimmed = p.trim();
                 if (!trimmed) return '';
+                
+                if (trimmed.startsWith('<img') || trimmed.startsWith('<blockquote') || trimmed.startsWith('<audio') || trimmed.startsWith('<div')) {
+                    return trimmed;
+                }
+
                 if (trimmed.startsWith('*') || trimmed.startsWith('"') || trimmed.startsWith('>')) {
                     const cleanQuote = trimmed.replace(/^[\*">]+\s*/, '').replace(/[\*"]+$/, '');
                     return `<blockquote class="p-4 my-4 bg-slate-100 border-l-4 border-black text-slate-900 italic font-medium rounded-r-xl">${cleanQuote}</blockquote>`;
