@@ -33,40 +33,60 @@
         </form>
     </div>
 
-    <div id="admin-dashboard" class="hidden w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200">
-        <div class="flex items-center justify-between border-b pb-4 mb-6">
+    <div id="admin-dashboard" class="hidden w-full max-w-4xl bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200 space-y-6 my-8">
+        <div class="flex items-center justify-between border-b pb-4">
             <div>
                 <h1 class="text-xl font-bold text-slate-900">Admin Panel Editor</h1>
                 <p class="text-xs text-slate-500">asalnulis.web.id</p>
             </div>
-            <button onclick="logoutAdmin()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1.5">
-                <i class="fa-solid fa-right-from-bracket"></i> Keluar
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-globe mr-1"></i> Beranda
+                </a>
+                <a href="daftar-isi.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-list mr-1"></i> Daftar Isi
+                </a>
+                <button onclick="logoutAdmin()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+                </button>
+            </div>
         </div>
 
-        <div class="mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
             <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Personal Access Token</label>
             <div class="flex gap-2">
                 <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-black">
                 <button onclick="saveToken()" class="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Simpan</button>
             </div>
-            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di Local Storage browser Anda.</p>
+            <p class="text-[10px] text-slate-400 mt-1">*Token tersimpan aman di browser Anda.</p>
+        </div>
+
+        <div id="edit-indicator" class="hidden p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl flex items-center justify-between text-xs font-bold">
+            <span><i class="fa-solid fa-pen-to-square mr-1"></i> Mode Edit: Sedang mengubah naskah artikel.</span>
+            <button onclick="resetFormToNew()" class="underline text-amber-900 hover:text-black">Batal Edit (Buat Baru)</button>
         </div>
 
         <form id="article-form" class="space-y-4">
+            <input type="hidden" id="edit-filename" value="">
+            <input type="hidden" id="edit-sha" value="">
+
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Judul Tulisan / Naskah</label>
                 <input type="text" id="title" required placeholder="Masukkan judul tulisan..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-black">
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Topik</label>
-                    <select id="category" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Topik Kategori</label>
+                    <select id="category" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-medium">
                         <option value="ASAL NULIS">ASAL NULIS</option>
-                        <option value="RASAN-RASAN">RASAN-RASAN</option>
                         <option value="FIKSIANA">FIKSIANA</option>
+                        <option value="RASAN-RASAN">RASAN-RASAN</option>
                     </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Postingan</label>
+                    <input type="date" id="post-date" required class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm bg-white">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Estimasi Waktu Baca</label>
@@ -74,43 +94,65 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Path Gambar Sampul</label>
-                    <input type="text" id="image-name" placeholder="images/tulisan-1.webp" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Gambar Sampul</label>
+                    <input type="file" id="image-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+                    <input type="text" id="image-name" placeholder="Atau path: images/tulisan.webp" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Path Audio Backsound</label>
-                    <input type="text" id="audio-name" placeholder="audio/backsound-1.mp3" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-mono">
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-700 uppercase">Audio Backsound</label>
+                    <input type="file" id="audio-file" accept="audio/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+                    <input type="text" id="audio-name" placeholder="Atau path: audio/backsound.mp3" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan / Sub-judul Sarkas (Excerpt)</label>
-                <textarea id="excerpt" rows="2" required placeholder="Tuliskan 1-2 kalimat ringkasan singkat..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ringkasan / Excerpt</label>
+                <textarea id="excerpt" rows="2" required placeholder="Tuliskan ringkasan singkat..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Isi Naskah Lengkap</label>
-                <textarea id="content" rows="6" required placeholder="Tuliskan isi naskah tulisan secara lengkap..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+                <textarea id="content" rows="7" required placeholder="Tuliskan isi naskah tulisan secara lengkap..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
             </div>
 
             <button type="submit" id="submit-btn" class="w-full py-3.5 bg-black hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-lg transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> <span>Terbitkan Artikel Instan Ke GitHub</span>
+                <i class="fa-solid fa-paper-plane"></i> <span id="btn-text">Terbitkan Artikel Ke GitHub</span>
             </button>
         </form>
 
-        <div id="status" class="hidden mt-4 p-4 rounded-xl text-xs text-center font-bold"></div>
+        <div id="status" class="hidden p-4 rounded-xl text-xs text-center font-bold"></div>
+
+        <div class="border-t pt-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Kelola Daftar Tulisan Diterbitkan</h2>
+                <button onclick="fetchArticleList()" class="text-xs text-slate-600 hover:text-black font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh List
+                </button>
+            </div>
+
+            <div id="article-list-container" class="space-y-2">
+                <p class="text-xs text-slate-400 italic text-center py-4">Memuat daftar artikel...</p>
+            </div>
+        </div>
     </div>
 
     <script>
         const ADMIN_PASSCODE = "admin123";
+        const REPO = "usudo218/blog";
+        const BRANCH = "main";
 
         const loginScreen = document.getElementById('login-screen');
         const adminDashboard = document.getElementById('admin-dashboard');
         const loginError = document.getElementById('login-error');
+        const articleForm = document.getElementById('article-form');
+        const editIndicator = document.getElementById('edit-indicator');
+        const btnText = document.getElementById('btn-text');
 
-        // Cek login status
+        document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+
         if (sessionStorage.getItem('an_admin_logged') === 'true') {
             showDashboard();
         }
@@ -130,6 +172,7 @@
             loginScreen.classList.add('hidden');
             adminDashboard.classList.remove('hidden');
             document.getElementById('gh-token').value = localStorage.getItem('an_gh_token') || '';
+            fetchArticleList();
         }
 
         function logoutAdmin() {
@@ -145,10 +188,48 @@
             }
             localStorage.setItem('an_gh_token', token);
             alert('Token berhasil disimpan!');
+            fetchArticleList();
         }
 
-        // Handle Submit Artikel ke GitHub
-        document.getElementById('article-form').addEventListener('submit', async (e) => {
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function uploadMediaFile(file, folder, token) {
+            const ext = file.name.split('.').pop();
+            const cleanName = `${folder.slice(0, -1)}-${Date.now()}.${ext}`;
+            const path = `${folder}${cleanName}`;
+            const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+            const contentBase64 = await fileToBase64(file);
+
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Upload media: ${cleanName}`,
+                    content: contentBase64,
+                    branch: BRANCH
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(`Gagal upload ${file.name}: ${err.message}`);
+            }
+
+            return path;
+        }
+
+        articleForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('an_gh_token');
             const statusDiv = document.getElementById('status');
@@ -160,35 +241,61 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengirim ke GitHub...</span>';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses & Mengirim ke GitHub...</span>';
             statusDiv.classList.add('hidden');
 
-            const title = document.getElementById('title').value.trim();
-            const category = document.getElementById('category').value;
-            const readTime = document.getElementById('readTime').value.trim();
-            const image = document.getElementById('image-name').value.trim();
-            const audio = document.getElementById('audio-name').value.trim();
-            const excerpt = document.getElementById('excerpt').value.trim();
-            const content = document.getElementById('content').value.trim();
-
-            const fileName = `article-${Date.now()}.json`;
-            const fileData = {
-                title,
-                category,
-                readTime,
-                image,
-                audio,
-                excerpt,
-                content,
-                date: new Date().toISOString()
-            };
-
-            const repo = 'usudo218/blog'; // Repositori target
-            const branch = 'main';         // Ganti ke 'master' jika repositori menggunakan branch master
-            const path = `content/${fileName}`;
-            const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-
             try {
+                let imagePath = document.getElementById('image-name').value.trim();
+                let audioPath = document.getElementById('audio-name').value.trim();
+
+                const imgFileInput = document.getElementById('image-file');
+                const audFileInput = document.getElementById('audio-file');
+
+                if (imgFileInput.files.length > 0) {
+                    imagePath = await uploadMediaFile(imgFileInput.files[0], 'images/', token);
+                    document.getElementById('image-name').value = imagePath;
+                }
+
+                if (audFileInput.files.length > 0) {
+                    audioPath = await uploadMediaFile(audFileInput.files[0], 'audio/', token);
+                    document.getElementById('audio-name').value = audioPath;
+                }
+
+                const title = document.getElementById('title').value.trim();
+                const category = document.getElementById('category').value;
+                const date = document.getElementById('post-date').value;
+                const readTime = document.getElementById('readTime').value.trim();
+                const excerpt = document.getElementById('excerpt').value.trim();
+                const content = document.getElementById('content').value.trim();
+
+                const editFileName = document.getElementById('edit-filename').value;
+                const editSha = document.getElementById('edit-sha').value;
+
+                const fileName = editFileName ? editFileName : `article-${Date.now()}.json`;
+                const fileData = {
+                    title,
+                    category,
+                    date,
+                    readTime,
+                    image: imagePath,
+                    audio: audioPath,
+                    excerpt,
+                    content
+                };
+
+                const path = `content/${fileName}`;
+                const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+
+                const payload = {
+                    message: editFileName ? `Update artikel: ${title}` : `Tambah artikel: ${title}`,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
+                    branch: BRANCH
+                };
+
+                if (editSha) {
+                    payload.sha = editSha;
+                }
+
                 const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -196,31 +303,150 @@
                         'Accept': 'application/vnd.github+json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        message: `Tambah artikel: ${title}`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2)))),
-                        branch: branch
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
-                    statusDiv.innerText = `BERHASIL! Artikel "${title}" telah berhasil diterbitkan ke GitHub.`;
-                    document.getElementById('article-form').reset();
+                    statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
+                    statusDiv.innerText = editFileName ? `BERHASIL! Artikel "${title}" telah diperbarui.` : `BERHASIL! Artikel "${title}" telah diterbitkan.`;
+                    resetFormToNew();
+                    fetchArticleList();
                 } else {
-                    throw new Error(`${result.message || 'Gagal mengirim data'} (HTTP ${response.status})`);
+                    throw new Error(`${result.message || 'Gagal menyimpan artikel'} (HTTP ${response.status})`);
                 }
             } catch (err) {
-                statusDiv.className = 'mt-4 p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
+                statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-rose-100 text-rose-800 block';
                 statusDiv.innerText = 'GAGAL: ' + err.message;
-                console.error('Detail Error:', err);
+                console.error(err);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Terbitkan Artikel Instan Ke GitHub</span>';
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>${document.getElementById('edit-filename').value ? 'Simpan Perubahan Artikel' : 'Terbitkan Artikel Ke GitHub'}</span>`;
             }
         });
+
+        async function fetchArticleList() {
+            const listContainer = document.getElementById('article-list-container');
+            const token = localStorage.getItem('an_gh_token');
+
+            try {
+                const headers = { 'Accept': 'application/vnd.github+json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`https://api.github.com/repos/${REPO}/contents/content?t=${Date.now()}`, { headers });
+                
+                if (!res.ok) {
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada artikel atau folder content belum dibuat.</p>`;
+                    return;
+                }
+
+                const files = await res.json();
+                const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+
+                if (jsonFiles.length === 0) {
+                    listContainer.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-4">Belum ada artikel diterbitkan.</p>`;
+                    return;
+                }
+
+                listContainer.innerHTML = '';
+
+                for (let file of jsonFiles) {
+                    listContainer.innerHTML += `
+                        <div class="bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs">
+                            <div class="truncate">
+                                <span class="font-bold text-slate-900 block truncate">${file.name}</span>
+                                <span class="text-[10px] text-slate-400">${file.path}</span>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="editArticle('${file.name}', '${file.sha}', '${file.download_url}')" class="px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition">
+                                    <i class="fa-solid fa-pen-to-square mr-1"></i> Edit
+                                </button>
+                                <button onclick="deleteArticle('${file.name}', '${file.sha}')" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition">
+                                    <i class="fa-solid fa-trash mr-1"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                listContainer.innerHTML = `<p class="text-xs text-rose-500 italic text-center py-4">Gagal memuat list: ${err.message}</p>`;
+            }
+        }
+
+        async function editArticle(fileName, sha, downloadUrl) {
+            try {
+                const res = await fetch(`${downloadUrl}?t=${Date.now()}`);
+                if (!res.ok) throw new Error('Gagal mengambil detail artikel');
+                const data = await res.json();
+
+                document.getElementById('edit-filename').value = fileName;
+                document.getElementById('edit-sha').value = sha;
+                document.getElementById('title').value = data.title || '';
+                document.getElementById('category').value = data.category || 'ASAL NULIS';
+                document.getElementById('post-date').value = data.date ? data.date.split('T')[0] : new Date().toISOString().split('T')[0];
+                document.getElementById('readTime').value = data.readTime || '3 mnt';
+                document.getElementById('image-name').value = data.image || '';
+                document.getElementById('audio-name').value = data.audio || '';
+                document.getElementById('excerpt').value = data.excerpt || '';
+                document.getElementById('content').value = data.content || '';
+
+                editIndicator.classList.remove('hidden');
+                btnText.innerText = 'Simpan Perubahan Artikel';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                alert('Gagal membuka editor: ' + err.message);
+            }
+        }
+
+        function resetFormToNew() {
+            articleForm.reset();
+            document.getElementById('edit-filename').value = '';
+            document.getElementById('edit-sha').value = '';
+            document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+            editIndicator.classList.add('hidden');
+            btnText.innerText = 'Terbitkan Artikel Ke GitHub';
+        }
+
+        async function deleteArticle(fileName, sha) {
+            const token = localStorage.getItem('an_gh_token');
+            if (!token) {
+                alert('Token diperlukan untuk menghapus artikel!');
+                return;
+            }
+
+            if (!confirm(`Yakin ingin menghapus file "${fileName}" secara permanen dari GitHub?`)) {
+                return;
+            }
+
+            const url = `https://api.github.com/repos/${REPO}/contents/content/${fileName}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Hapus artikel: ${fileName}`,
+                        sha: sha,
+                        branch: BRANCH
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Artikel berhasil dihapus!');
+                    fetchArticleList();
+                } else {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Gagal menghapus');
+                }
+            } catch (err) {
+                alert('Gagal menghapus artikel: ' + err.message);
+            }
+        }
     </script>
 </body>
 </html>
