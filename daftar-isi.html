@@ -126,6 +126,7 @@
     </footer>
 
     <script>
+        const repo = 'usudo218/asalnulis';
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
@@ -165,28 +166,31 @@
             const modals = document.getElementById('modals-container');
             const emptyState = document.getElementById('empty-state');
 
-            const repo = 'usudo218/asalnulis';
             let allArticles = [];
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${repo}/contents/content?t=${Date.now()}`, {
-                    cache: 'no-store'
-                });
+                const response = await fetch(`https://api.github.com/repos/${repo}/contents/content`);
                 
                 if (response.ok) {
                     const files = await response.json();
-                    for (let file of files) {
-                        if (file.name.endsWith('.json')) {
-                            const resData = await fetch(`${file.download_url}?t=${Date.now()}`, {
-                                cache: 'no-store'
-                            });
-                            if (resData.ok) {
-                                const articleData = await resData.json();
-                                articleData.id = 'archive-' + file.name.replace('.json', '');
-                                allArticles.push(articleData);
-                            }
-                        }
-                    }
+                    const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+
+                    // Fetch paralel untuk mempercepat pemuatan arsip
+                    const promises = jsonFiles.map(file => 
+                        fetch(file.download_url)
+                            .then(res => res.ok ? res.json() : null)
+                            .then(data => {
+                                if (data) {
+                                    data.id = 'archive-' + file.name.replace('.json', '');
+                                    return data;
+                                }
+                                return null;
+                            })
+                            .catch(() => null)
+                    );
+
+                    const results = await Promise.all(promises);
+                    allArticles = results.filter(art => art !== null);
                 }
             } catch (err) {
                 console.error("Gagal mengambil data arsip:", err);
