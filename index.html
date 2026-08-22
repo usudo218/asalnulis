@@ -100,7 +100,7 @@
     <!-- Footer -->
     <footer class="bg-black text-slate-400 py-10 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-2">
-              <p class="font-bold text-white text-sm">asalnulis.web.id</p>
+            <p class="font-bold text-white text-sm">asalnulis.web.id</p>
             <p>Menulis untuk merawat ingatan</p>
             <p class="text-[10px] tracking-widest uppercase text-slate-500 pt-2">&copy; 2026 asalnulis.web.id. All rights reserved.</p>
         </div>
@@ -119,7 +119,6 @@
             if (modal) modal.classList.toggle('hidden');
         }
 
-        // Salin Tautan Spesifik Artikel
         function copyArticleLink(artId) {
             const shareUrl = `${BASE_DOMAIN}/?baca=${artId}`;
             if (navigator.clipboard && window.isSecureContext) {
@@ -160,23 +159,31 @@
             let allArticles = [];
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO}/contents/content?t=${Date.now()}`);
+                const response = await fetch(`https://api.github.com/repos/${REPO}/contents/content`);
                 
                 if (response.ok) {
                     const files = await response.json();
-                    for (let file of files) {
-                        if (file.name.endsWith('.json')) {
-                            const resData = await fetch(`${file.download_url}?t=${Date.now()}`);
-                            if (resData.ok) {
-                                const articleData = await resData.json();
-                                articleData.id = file.name.replace('.json', '');
-                                allArticles.push(articleData);
-                            }
-                        }
-                    }
+                    const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+                    
+                    // Fetch paralel semua naskah sekaligus
+                    const promises = jsonFiles.map(file => 
+                        fetch(file.download_url)
+                            .then(res => res.ok ? res.json() : null)
+                            .then(data => {
+                                if (data) {
+                                    data.id = file.name.replace('.json', '');
+                                    return data;
+                                }
+                                return null;
+                            })
+                            .catch(() => null)
+                    );
+
+                    const results = await Promise.all(promises);
+                    allArticles = results.filter(art => art !== null);
                 }
             } catch (err) {
-                console.log("Gagal membaca GitHub API:", err);
+                console.error("Gagal membaca data GitHub:", err);
             } finally {
                 loading.classList.add('hidden');
                 grid.innerHTML = '';
@@ -245,7 +252,6 @@
                         </div>`;
                 });
 
-                // Deteksi tautan langsung dari URL (?baca=...)
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetArticleId = urlParams.get('baca');
                 if (targetArticleId) {
