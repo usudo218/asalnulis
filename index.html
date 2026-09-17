@@ -165,7 +165,6 @@
                     const files = await response.json();
                     const jsonFiles = files.filter(f => f.name.endsWith('.json'));
                     
-                    // Fetch paralel semua naskah sekaligus
                     const promises = jsonFiles.map(file => 
                         fetch(file.download_url)
                             .then(res => res.ok ? res.json() : null)
