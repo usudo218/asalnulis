@@ -127,7 +127,7 @@
                         <option value="ASAL NULIS">ASAL NULIS</option>
                         <option value="FIKSIANA">FIKSIANA</option>
                         <option value="RASAN-RASAN">RASAN-RASAN</option>
-                        <option value="RASAN-RASAN">CATATAN HARIAN</option>
+                        <option value="CATATAN HARIAN">CATATAN HARIAN</option>
                     </select>
                 </div>
                 <div>
@@ -223,7 +223,6 @@
             } else {
                 loginModal.classList.remove('hidden');
                 adminDashboard.classList.add('hidden');
-                // Mengambil token yang sebelumnya tersimpan (jika ada)
                 document.getElementById('login-token').value = localStorage.getItem('an_gh_token_saved') || '';
             }
         }
@@ -250,7 +249,6 @@
             loginError.classList.add('hidden');
 
             try {
-                // Verifikasi validitas token langsung ke GitHub API
                 const res = await fetch('https://api.github.com/user', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -258,7 +256,7 @@
                 if (res.ok) {
                     sessionStorage.setItem('an_gh_token', token);
                     sessionStorage.setItem('an_admin_auth', 'true');
-                    localStorage.setItem('an_gh_token_saved', token); // Menyimpan token untuk kenyamanan sesi berikutnya
+                    localStorage.setItem('an_gh_token_saved', token);
                     
                     loginModal.classList.add('hidden');
                     adminDashboard.classList.remove('hidden');
