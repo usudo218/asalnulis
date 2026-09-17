@@ -211,6 +211,16 @@
 
         document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
 
+        // Helper slug judul ke nama file aman
+        function titleToSlug(title) {
+            return title
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'naskah';
+        }
+
         // --- AUTHENTICATION & LOGIN ---
         function checkAuth() {
             const token = sessionStorage.getItem('an_gh_token');
@@ -455,7 +465,8 @@
                 const editFileName = document.getElementById('edit-filename').value;
                 let editSha = document.getElementById('edit-sha').value;
 
-                const fileName = editFileName ? editFileName : `article-${Date.now()}.json`;
+                // Penamaan otomatis berdasarkan judul (slug)
+                const fileName = editFileName ? editFileName : `${titleToSlug(title)}.json`;
                 
                 const fileData = {
                     title, category, date, readTime,
@@ -500,7 +511,7 @@
 
                 if (response.ok) {
                     statusDiv.className = 'p-4 rounded-xl text-xs text-center font-bold bg-emerald-100 text-emerald-800 block';
-                    statusDiv.innerText = editFileName ? `BERHASIL! Naskah "${title}" telah diperbarui.` : `BERHASIL! Naskah "${title}" telah diterbitkan.`;
+                    statusDiv.innerText = editFileName ? `BERHASIL! Naskah "${title}" telah diperbarui.` : `BERHASIL! Naskah "${title}" telah diterbitkan sebagai ${fileName}.`;
                     resetFormToNew();
                     fetchArticleList();
                 } else {
@@ -516,7 +527,7 @@
             }
         });
 
-        // --- FETCH DAFTAR ARTIKEL ---
+        // --- FETCH DAFTAR ARTIKEL (DENGAN TAMPILAN JUDUL ASLI) ---
         async function fetchArticleList() {
             const listContainer = document.getElementById('article-list-container');
             const token = sessionStorage.getItem('an_gh_token');
@@ -544,22 +555,49 @@
                     return;
                 }
 
+                listContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-4">Mengambil judul naskah...</p>';
+
+                // Ambil konten naskah secara paralel agar bisa menampilkan judul aslinya langsung di daftar
+                const detailedFiles = await Promise.all(
+                    jsonFiles.map(async (file) => {
+                        try {
+                            const fRes = await fetch(file.download_url);
+                            if (fRes.ok) {
+                                const data = await fRes.json();
+                                return {
+                                    ...file,
+                                    articleTitle: data.title || file.name,
+                                    articleCategory: data.category || 'ASAL NULIS',
+                                    articleDate: data.date || ''
+                                };
+                            }
+                        } catch(e) {}
+                        return { ...file, articleTitle: file.name, articleCategory: '', articleDate: '' };
+                    })
+                );
+
                 listContainer.innerHTML = '';
 
-                jsonFiles.forEach(file => {
+                // Urutkan dari tanggal postingan / nama terbaru
+                detailedFiles.sort((a, b) => new Date(b.articleDate || 0) - new Date(a.articleDate || 0));
+
+                detailedFiles.forEach(file => {
                     const itemDiv = document.createElement('div');
-                    itemDiv.className = 'bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs';
+                    itemDiv.className = 'bg-slate-50 border border-slate-200 px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-xs hover:border-slate-300 transition';
                     
                     itemDiv.innerHTML = `
-                        <div class="truncate">
-                            <span class="font-bold text-slate-900 block truncate">${file.name}</span>
-                            <span class="text-[10px] text-slate-400">${file.path}</span>
+                        <div class="truncate space-y-0.5">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-900 text-sm block truncate">${file.articleTitle}</span>
+                                ${file.articleCategory ? `<span class="text-[9px] px-2 py-0.5 bg-slate-200 text-slate-700 font-bold rounded-md uppercase shrink-0">${file.articleCategory}</span>` : ''}
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-mono block truncate">${file.name}</span>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <button type="button" class="btn-edit px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition flex items-center gap-1">
+                            <button type="button" class="btn-edit px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg transition flex items-center gap-1.5">
                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                             </button>
-                            <button type="button" class="btn-delete px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition flex items-center gap-1">
+                            <button type="button" class="btn-delete px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg transition flex items-center gap-1.5">
                                 <i class="fa-solid fa-trash"></i> Hapus
                             </button>
                         </div>
